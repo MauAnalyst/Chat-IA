@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suporte IA | <%= title %></title>
+    <link rel="shortcut icon" href="/imgs/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_right_alt"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <img src="/imgs/logo.png" alt="logo ia" />
+          <h2>Sup Sistemas IA</h2>
+          <p>Desenvolvido por Mauricio Brito dos Santos</p>
+        </div>
+        <ul class="chats">
+          <li id="chat-geral">
+            <a href="/chats/geral" class="chat-group">
+              <img src="/imgs/GR.png" alt="geral logo" />
+              <div class="text">
+                <h3>Geral</h3>
+                <p>Não sabe qual o processo?</p>
+              </div>
+            </a>
+          </li>
+          <li id="chat-segregado">
+            <a href="/chats/segregados" class="chat-group">
+              <img src="/imgs/SG.png" alt="geral logo" />
+              <div class="text">
+                <h3>Segregados</h3>
+                <p>Segregados e Avaria</p>
+              </div>
+            </a>
+          </li>
+          <li id="chat-recebimento">
+            <a href="/chats/recebimento" class="chat-group">
+              <img src="/imgs/RB.png" alt="geral logo" />
+              <div class="text">
+                <h3>Recebimento</h3>
+                <p>Fornecedor e transferência</p>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <!-- chats -->
+    <%- include('pages/' + page) %>
+  </body>
+</html>
