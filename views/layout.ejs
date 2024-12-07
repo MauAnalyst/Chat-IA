@@ -20,8 +20,8 @@
           <p>Desenvolvido por Mauricio Brito dos Santos</p>
         </div>
         <ul class="chats">
-          <li id="chat-geral">
-            <a href="/chats/geral" class="chat-group">
+          <li>
+            <a class="chat-group">
               <img src="/imgs/GR.png" alt="geral logo" />
               <div class="text">
                 <h3>Geral</h3>
@@ -29,8 +29,8 @@
               </div>
             </a>
           </li>
-          <li id="chat-segregado">
-            <a href="/chats/segregados" class="chat-group">
+          <li>
+            <a class="chat-group">
               <img src="/imgs/SG.png" alt="geral logo" />
               <div class="text">
                 <h3>Segregados</h3>
@@ -38,12 +38,12 @@
               </div>
             </a>
           </li>
-          <li id="chat-recebimento">
-            <a href="/chats/recebimento" class="chat-group">
+          <li>
+            <a class="chat-group">
               <img src="/imgs/RB.png" alt="geral logo" />
               <div class="text">
                 <h3>Recebimento</h3>
-                <p>Fornecedor e transferência</p>
+                <p>Fornecedor e transferências</p>
               </div>
             </a>
           </li>
@@ -51,6 +51,51 @@
       </nav>
     </header>
     <!-- chats -->
-    <%- include('pages/' + page) %>
+    <section class="content">
+      <!-- titulo dinamico -->
+      <%- include('pages/' + page) %>
+      <!-- fim titulo dinamico -->
+      <div class="content-chat">
+        <div id="history">
+          <!-- adicionando o hystory chat -->
+          <div id="perg" class="msgm-group">
+            <p>Olá, tudo bem ?</p>
+          </div>
+          <div id="resp" class="msgm-group">
+            <img src="/imgs/logo.png" alt="logo ia" />
+            <p>Olá! Tudo ótimo, e você? 😊 Como posso te ajudar hoje?</p>
+          </div>
+          <!-- loading -->
+          <div id="loading">
+            <img src="/imgs/logo.png" alt="logo ia" />
+            <section class="dots-container">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </section>
+          </div>
+          <!-- fim hystory -->
+        </div>
+        <form id="msg-user">
+          <input
+            type="text"
+            id="user_input"
+            name="user_input"
+            maxlength="100"
+          />
+          <button type="button" id="to-send">
+            <span class="material-symbols-outlined"> arrow_right_alt </span>
+          </button>
+        </form>
+        <p class="warning">
+          O Sup Sistemas IA pode cometer erros. considere verificar informações
+          importantes.
+        </p>
+      </div>
+    </section>
+
+    <script src="/js/index.js"></script>
   </body>
 </html>

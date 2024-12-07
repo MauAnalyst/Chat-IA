@@ -1,0 +1,38 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const titleContent = document.querySelector(".content .title span");
+  const titleChats = document.querySelectorAll(".chats .chat-group h3");
+  const chatsGroup = document.querySelectorAll(".chats .chat-group");
+
+  titleChats.forEach((e, i) => {
+    if (
+      e.textContent.toUpperCase() === titleContent.textContent.toUpperCase()
+    ) {
+      chatsGroup[i].style.backgroundColor = "var(--color5)";
+    }
+  });
+
+  chatsGroup.forEach((e, i) => {
+    e.addEventListener("click", () => {
+      chatsGroup.forEach((e) => {
+        e.style.backgroundColor = "transparent";
+      });
+      chatsGroup[i].style.backgroundColor = "var(--color5)";
+      const chatTitle = titleChats[i].textContent.toLowerCase();
+      fetch(`/chats/c/${chatTitle}`, {
+        method: "GET",
+        // params: chatTitle,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          history.pushState(null, "", `/chats/${chatTitle}`);
+
+          document.querySelector(".content .title").innerHTML = data.content;
+
+          // Aqui você pode atualizar a página ou fazer algo com a resposta
+        })
+        .catch((error) => {
+          console.error("Erro:", error);
+        });
+    });
+  });
+});
