@@ -53,7 +53,8 @@
     <!-- chats -->
     <section class="content">
       <!-- titulo dinamico -->
-      <%- include('pages/' + page) %>
+      <div class="title"><%- content %></div>
+
       <!-- fim titulo dinamico -->
       <div class="content-chat">
         <div id="history">
@@ -85,7 +86,7 @@
             name="user_input"
             maxlength="100"
           />
-          <button type="button" id="to-send">
+          <button type="submit" id="to-send">
             <span class="material-symbols-outlined"> arrow_right_alt </span>
           </button>
         </form>

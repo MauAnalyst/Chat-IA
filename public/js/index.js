@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  //navegando entre chates
   const titleContent = document.querySelector(".content .title span");
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
   const chatsGroup = document.querySelectorAll(".chats .chat-group");
@@ -27,12 +28,24 @@ document.addEventListener("DOMContentLoaded", () => {
           history.pushState(null, "", `/chats/${chatTitle}`);
 
           document.querySelector(".content .title").innerHTML = data.content;
-
-          // Aqui você pode atualizar a página ou fazer algo com a resposta
         })
         .catch((error) => {
           console.error("Erro:", error);
         });
+    });
+  });
+
+  //enviando msgm para a IA
+  const input = document.querySelector("#user_input");
+
+  input.addEventListener("click", (e) => {
+    e.defaultPrevented();
+
+    const formData = new FormData(form);
+
+    fetch("/chats/env-resp", {
+      method: "POST",
+      body: formData,
     });
   });
 });
