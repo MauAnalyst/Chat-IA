@@ -1,4 +1,5 @@
 import { DataPages } from "./pages.js";
+import { responseAI } from "./geminiAI.js";
 
 const RespIA = (req, res) => {
   try {
@@ -47,4 +48,15 @@ const GetPageContent = (req, res) => {
   }
 };
 
-export { RespIA, Chatpages, AcessPages, GetPageContent };
+const SendResp = async (req, res) => {
+  const { subject, message } = req.body;
+  try {
+    const response = await responseAI(message);
+    res.json({ resp: `${response}` });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erro ao carregar a página.");
+  }
+};
+
+export { RespIA, Chatpages, AcessPages, GetPageContent, SendResp };

@@ -35,17 +35,75 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //enviando msgm para a IA
+  //Comunicação com a IA
+  const hystory = document.querySelector("#history");
+  const send = document.querySelector("#to-send");
   const input = document.querySelector("#user_input");
+  const load = `
+   <img src="/imgs/logo.png" alt="logo ia" />
+    <section class="dots-container">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </section>
+  `;
 
-  input.addEventListener("click", (e) => {
-    e.defaultPrevented();
+  send.addEventListener("click", async (e) => {
+    e.preventDefault();
 
-    const formData = new FormData(form);
+    const origin = document.querySelector(".content .title span").textContent;
+    const msgm = input.value;
 
-    fetch("/chats/env-resp", {
+    //trantando input
+    input.value = "";
+    input.disabled = true;
+
+    //adicionando a msgm do usuário no histórico
+    const divQuestion = document.createElement("div");
+    const pQuestion = document.createElement("p");
+
+    divQuestion.id = "perg";
+    divQuestion.className = "msgm-group";
+    pQuestion.textContent = msgm;
+
+    divQuestion.appendChild(pQuestion);
+    hystory.appendChild(divQuestion);
+
+    //loading para esperar a resposta do gemini AI
+    const loading = document.createElement("div");
+
+    loading.id = "loading";
+    loading.innerHTML = load;
+
+    hystory.appendChild(loading);
+
+    const response = await fetch("/chats/send/message", {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: origin,
+        message: msgm,
+      }),
     });
+
+    const data = await response.json();
+
+    //adicionando a resposta da gemini AI no histórico
+    const divResp = document.createElement("div");
+    const pResp = document.createElement("p");
+
+    divResp.id = "resp";
+    divResp.className = "msgm-group";
+    divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
+    pResp.textContent = data.resp;
+
+    divResp.appendChild(pResp);
+    hystory.appendChild(divResp);
+
+    document.querySelector("#loading").remove();
+    input.disabled = false;
+    console.log(data.resp);
   });
 });

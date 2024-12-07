@@ -189,6 +189,7 @@ header {
   margin: 1rem 0;
   /* padding: 1rem; */
   width: 100%;
+  font-size: 0.9rem;
 }
 
 .content-chat #history #perg {
@@ -228,6 +229,7 @@ header {
 }
 
 .content-chat #msg-user input[type="text"] {
+  font-size: 0.9rem;
   width: 100%;
   border: none;
   padding: 0.5rem;
@@ -236,7 +238,6 @@ header {
 
 .content-chat #msg-user input[type="text"]:focus {
   outline: none;
-  font-size: 1rem;
 }
 
 .content-chat #msg-user #to-send {
