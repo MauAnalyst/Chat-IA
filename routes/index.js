@@ -1,11 +1,10 @@
 import express from "express";
+import { RespIA, Chatpages, AcessPages } from "../controllers/controller.js";
 
 const router = express.Router();
 
-router.get("/", userController);
-router.get("/page/home", home);
-router.get("/page/create", register);
-
-router.post("/create/fast-duo", fastDuo);
+router.get("/chats", Chatpages);
+router.get("/chats/:processo", AcessPages);
+//router.get("/", RespIA);
 
 export { router };
