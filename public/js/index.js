@@ -50,6 +50,20 @@ document.addEventListener("DOMContentLoaded", () => {
     </section>
   `;
 
+  const loadHistory = () => {
+    const storedHistory = localStorage.getItem("chatHistory");
+    const history = storedHistory ? JSON.parse(storedHistory) : {};
+
+    return {
+      user: Array.isArray(history.user) ? history.user : [],
+      osvaldo: Array.isArray(history.osvaldo) ? history.osvaldo : [],
+    };
+  };
+
+  const saveHistory = (history) => {
+    localStorage.setItem("chatHistory", JSON.stringify(history));
+  };
+
   send.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -71,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     divQuestion.appendChild(pQuestion);
     hystory.appendChild(divQuestion);
 
-    //loading para esperar a resposta do gemini AI
+    //exibir carragamento
     const loading = document.createElement("div");
 
     loading.id = "loading";
@@ -79,16 +93,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     hystory.appendChild(loading);
 
+    // Atualizar histórico no localStorage
+    const historyLocal = loadHistory();
+    historyLocal.user.push(msgm);
+    if (historyLocal.user.length > 10) historyLocal.user.shift();
+    saveHistory(historyLocal);
+
     const response = await fetch("/chats/send/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         subject: origin,
         message: msgm,
+        history: getHistory(),
       }),
     });
 
     const data = await response.json();
+
+    historyLocal.osvaldo.push(data.resp);
+    if (historyLocal.osvaldo.length > 10) historyLocal.osvaldo.shift(); // Limitar a 5 mensagens
+    saveHistory(historyLocal);
 
     //adicionando a resposta da gemini AI no histórico
     const divResp = document.createElement("div");
@@ -97,13 +122,33 @@ document.addEventListener("DOMContentLoaded", () => {
     divResp.id = "resp";
     divResp.className = "msgm-group";
     divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
-    pResp.textContent = data.resp;
+    pResp.innerHTML = data.resp; //formatText(data.resp);
 
     divResp.appendChild(pResp);
     hystory.appendChild(divResp);
 
+    // Remover carregamento e reativar input
     document.querySelector("#loading").remove();
     input.disabled = false;
-    console.log(data.resp);
+    input.focus();
   });
+
+  const getHistory = () => {
+    const history = loadHistory(); // Reutiliza a função que já criamos
+    return history; // Retorna o objeto { user: [...], ia: [...] }
+  };
+
+  function formatText(text) {
+    // Formata blocos de texto com explicações e quebra de linhas
+    let formattedText = text
+      .replace(/\n\*{4}(.*?)\*{4}\n/g, "\n\n**$1:**\n") // Negrito para seções importantes
+      .replace(/```javascript([\s\S]*?)```/g, "\n\n```javascript\n$1\n```\n") // Mantém blocos de código
+      .replace(/-\s\*\*(.*?)\*\*/g, "\n- **$1**") // Ajusta marcadores com negrito
+      .replace(/\*\*(.*?)\*\*/g, "**$1**") // Garante negrito para trechos destacados
+      .replace(/(\*{2}[A-Z].*?:\*{2})/g, "\n\n$1"); // Adiciona espaçamento antes de títulos
+
+    return formattedText;
+  }
 });
+
+//localStorage.clear();
