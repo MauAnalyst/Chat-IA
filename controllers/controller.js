@@ -49,9 +49,9 @@ const GetPageContent = (req, res) => {
 };
 
 const SendResp = async (req, res) => {
-  const { subject, message } = req.body;
+  const { subject, message, history } = req.body;
   try {
-    const response = await responseAI(message);
+    const response = await responseAI(message, history);
     res.json({ resp: `${response}` });
   } catch (error) {
     console.log(error);
