@@ -1,0 +1,40 @@
+A zavr_102 é responsável pelo processo de avaria de materiais, onde é realizado classificações e emissão de NFI (Nota fiscal de Incineração).
+
+->pontos importantes:
+Quando o material está em bloqueado na MB52, os status na zavr_102 ficará como AV. (avariado)
+Quando o material está em controle de qualidade, os status na zavr_102 ficará como IC. (incineração)
+
+->depósitos MM do SAP:
+101 - avaria interna (o movimento de baixa de estoque é ZM5 e estorno da baixa é ZM6)
+102 - avaria externa (o movimento de baixa de estoque é ZC1 e estorno da baixa é ZC2)
+108 - avaria Cross (o movimento de baixa de estoque é ZM7 e estorno da baixa é ZM8)
+013 - avaria fob (o movimento de baixa de estoque é ZN1 e estorno da baixa é ZN2)
+113 - avaria comercial  (o movimento de baixa de estoque é ZN3 e estorno da baixa é ZN4)
+
+caminho da imagem"./img/imagemDeErrodatela.png"
+
+Movimentações:
+As movimentação manuais influenciam os registros na ZAVR_102, deixando sujeiras/registros indevidos, e são elas feitas fora da zavr_102. 
+Para o caso divergência de saldo na ZAVR_102, para saber se é erro operacional, basta verificar as movimentações na MB51:
+
+Movimentações feita pela transação ZAVR_102 geram os tipos de movimentoes a seguir na MB51 (que é a forma correta):
+TMv. Z27 (dep. 101) - transf. do livre -> bloqueado (criará um registro com classificação igual a AV na tabela)
+TMv. Z28 (dep. 101) - Estorno da Z27
+TMv. ZA3 (dep. 101) - transf. do bloqueado -> controle de qualidade (a classificação ficará IC, acontece quando clica na opção de classificar na zavr_102, mudando de AV para IC)
+TMv. ZA4 (dep. 101) - Estorno da ZA3
+TMv. ZM5 (dep 101) - baixa de estoque (emissão da NFI, é realizado na opção de gerar nota fiscal na transação zavr_102)
+
+
+Movimentações que geram registros indevidos na tabela (pois são movimentações manuais que não interferem nos registros na zavr_102, o que acaba deixando registros indevidos, geralmente essas movimentações são feitas pela mb1b ou outra transação de movimentação interna ):
+TMv. 321 - TR qualidade -> livre
+TMv. 322 - Estorno do 321
+TMv. 311 - Transf entre depósito
+TMv. 343 - TR bloqueado->livre
+TMv. 344 - ET bloqueado->livre
+ 
+É importante lembrar que:
+  -movimentações manuais tem de ser evitadas a não ser que seja necessário.
+  -nunca é realizado movimentações entre depósitos diferentes dentro da zavr_102, a não ser que tenha que ser movimentado para revenda (dep 001).
+todas as movimentações geram um documento material, e quando é emitido nota, o doc. mat. de baixa é relacionado a ele. a NF pode ser visualizada na ZMM0205 com este documento material.
+
+quando não é gerado nota fiscal, sempre precisa da atuação do TI, que é necessário abrir chamado passando o número do documento material.

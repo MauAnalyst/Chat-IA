@@ -227,6 +227,7 @@ header {
   margin: 1rem 0;
   padding: 0.5rem;
   font-family: "Roboto Mono", monospace;
+  font-size: 0.8rem;
   background-color: var(--color1);
   color: var(--color6);
   border-radius: 0.5rem;
