@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  //navegando entre chates
+  const user_name = document.querySelector("#user-profile #user_name");
+
+  //navegando entre chats
   const titleContent = document.querySelector(".content .title span");
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
   const chatsGroup = document.querySelectorAll(".chats .chat-group");
@@ -17,10 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
       chatsGroup.forEach((e) => {
         e.style.backgroundColor = "transparent";
       });
+
+      localStorage.clear();
+      document.querySelector("#history").innerHTML = "";
       chatsGroup[i].style.backgroundColor = "var(--color5)";
+
       const chatTitle = titleChats[i].textContent.toLowerCase();
       fetch(`/chats/c/${chatTitle}`, {
         method: "GET",
+        //body: user_name.textContent,
         // params: chatTitle,
       })
         .then((response) => response.json())
@@ -106,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         subject: origin,
         message: msgm,
         history: getHistory(),
+        user: user_name.textContent,
       }),
     });
 
@@ -150,5 +158,20 @@ document.addEventListener("DOMContentLoaded", () => {
     return formattedText;
   }
 });
+
+// const history = document.getElementById("history");
+
+// history.addEventListener("scroll", () => {
+//   const scrollTop = history.scrollTop; // Posição de rolagem atual do topo
+//   const scrollHeight = history.scrollHeight; // Altura total do conteúdo
+//   const clientHeight = history.clientHeight; // Altura visível do elemento
+
+//   // Verifica se está no final (ou próximo ao final)
+//   if (scrollTop + clientHeight >= scrollHeight - 10) {
+//     console.log("Chegou ao final do scroll");
+//   } else {
+//     console.log("Ainda não está no final");
+//   }
+// });
 
 //localStorage.clear();
