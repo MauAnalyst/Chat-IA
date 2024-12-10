@@ -234,6 +234,16 @@ header {
   width: 100%;
 }
 
+.content-chat #history #resp p ul {
+  margin: 1rem 0;
+  list-style: circle;
+}
+
+.content-chat #history #resp p ul li {
+  margin: 0.3rem 0;
+  margin-left: 0.5rem;
+}
+
 .content-chat #history #perg p {
   background-color: var(--color6);
   padding: 1rem;

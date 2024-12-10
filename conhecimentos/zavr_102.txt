@@ -13,11 +13,12 @@ Quando o material está em controle de qualidade, os status na zavr_102 ficará 
 
 caminho da imagem"./img/imagemDeErrodatela.png"
 
-Movimentações:
+
 As movimentação manuais influenciam os registros na ZAVR_102, deixando sujeiras/registros indevidos, e são elas feitas fora da zavr_102. 
 Para o caso divergência de saldo na ZAVR_102, para saber se é erro operacional, basta verificar as movimentações na MB51:
 
-Movimentações feita pela transação ZAVR_102 geram os tipos de movimentoes a seguir na MB51 (que é a forma correta):
+As movimentações certas são realizadas na própria zavr_102, como desclassficar e retornar revenda.
+Movimentações feita pela transação ZAVR_102 geram os tipos de movimentoes a seguir na MB51 (exemplo no dep 101):
 TMv. Z27 (dep. 101) - transf. do livre -> bloqueado (criará um registro com classificação igual a AV na tabela)
 TMv. Z28 (dep. 101) - Estorno da Z27
 TMv. ZA3 (dep. 101) - transf. do bloqueado -> controle de qualidade (a classificação ficará IC, acontece quando clica na opção de classificar na zavr_102, mudando de AV para IC)
