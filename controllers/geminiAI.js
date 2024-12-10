@@ -6,7 +6,7 @@ dotenv.config();
 
 const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const CreatePrompt = (question, history, base) => {
+const OsvalodResp = (question, history, base) => {
   return `
     Sobre você:
     Você é um assistente de suporte de sistemas, chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
@@ -56,18 +56,18 @@ const returnAI = async (question, history, base) => {
       .replace(/```/, "")
   );
 
+  let prompt = "";
+
   if (ajustResult.data.transaction && ajustResult.data.technical === true) {
     const checkBase = await ReadTxt(ajustResult.data.transaction.toLowerCase());
-    let prompt = CreatePrompt(question, history, JSON.stringify(checkBase));
-    let ResultOsvaldo = await model.generateContent(prompt);
-
-    return ResultOsvaldo.response.text();
+    prompt = OsvalodResp(question, history, JSON.stringify(checkBase));
   } else {
-    let prompt = CreatePrompt(question, history, base);
-    let ResultOsvaldo = await model.generateContent(prompt);
-
-    return ResultOsvaldo.response.text();
+    prompt = OsvalodResp(question, history, base);
   }
+
+  const ResultOsvaldo = await model.generateContent(prompt);
+
+  return ResultOsvaldo.response.text();
 };
 
 const responseAI = async (question, history, base) => {
@@ -81,7 +81,7 @@ const responseAI = async (question, history, base) => {
     return response;
   } catch (err) {
     console.error(err);
-    return "Erro ao ler o arquivo ou gerar resposta";
+    return "Olá, me perdi aqui mano (deu erro no código kkkk). <br> Enfim, pode mandar sua pergunta de novo ?";
   }
 };
 
