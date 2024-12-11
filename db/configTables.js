@@ -62,7 +62,7 @@ const ConsultChat = async (userId, subject) => {
       return null; // Retorna null se nenhum resultado for encontrado
     }
 
-    return result.rows[0];
+    return result.rows;
   } catch (error) {
     console.error("Erro ao consultar chat", error);
   }

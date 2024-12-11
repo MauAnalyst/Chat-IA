@@ -171,6 +171,7 @@ header {
   max-width: 550px;
   /* max-height: 400px; */
   margin: 0 auto;
+  padding: 0 0.4rem;
   overflow-y: auto;
 }
 
@@ -387,4 +388,126 @@ header {
     background-color: #b3d4fc;
     box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
   }
+}
+
+/* loading chat */
+
+/* From Uiverse.io by elijahgummer */
+.analyze svg path.stick {
+  transform: translate(0);
+  animation: stick 2s ease infinite;
+  /* Change wand color */
+}
+
+.analyze svg path.star-1 {
+  /* width: 100%; */
+  font-size: 2rem;
+  fill: #ff4500; /* OrangeRed color */
+  animation: sparkles 2s ease infinite, scaleStars 2s ease infinite,
+    colorChange 2s ease infinite;
+  animation-delay: 150ms;
+}
+
+.analyze svg path.star-2 {
+  fill: #00ff00; /* Lime color */
+  animation: sparkles 2s ease infinite, scaleStars 2s ease infinite,
+    colorChange 2s ease infinite;
+}
+
+.board {
+  animation: bounce 2s ease infinite;
+}
+
+@keyframes sparkles {
+  0% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes stick {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  25% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  50% {
+    transform: translate3d(3px, -2px, 0) rotate(8deg);
+  }
+  75% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+}
+
+@keyframes scaleStars {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes colorChange {
+  0% {
+    fill: #ff4500; /* OrangeRed */
+  }
+  25% {
+    fill: #ffd700; /* Gold */
+  }
+  50% {
+    fill: #00ff00; /* Lime */
+  }
+  75% {
+    fill: #1e90ff; /* DodgerBlue */
+  }
+  100% {
+    fill: #ff4500; /* OrangeRed */
+  }
+}
+
+#loading-chat {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

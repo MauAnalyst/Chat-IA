@@ -21,9 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         e.style.backgroundColor = "transparent";
       });
 
-      localStorage.clear();
-      document.querySelector("#history").innerHTML = "";
       chatsGroup[i].style.backgroundColor = "var(--color5)";
+      document.querySelector("#loading-chat").style.display = "flex";
+
+      //limpando a tela e add loading
+      document.querySelector("#history").innerHTML = "";
+      document.querySelector(".content .title").innerHTML = "";
+      document.querySelector("#msg-user").style.display = "none";
+      document.querySelector(".warning").style.display = "none";
 
       const chatTitle = titleChats[i].textContent.toLowerCase();
       fetch(`/chats/c/${chatTitle}/${user_id.textContent}`, {
@@ -37,7 +42,40 @@ document.addEventListener("DOMContentLoaded", () => {
             `/chats/${chatTitle}/${user_id.textContent}`
           );
 
+          document.querySelector("#loading-chat").style.display = "none";
+
+          document.title = `Suporte IA | ${data.title}`;
           document.querySelector(".content .title").innerHTML = data.content;
+          document.querySelector("#msg-user").style.display = "flex";
+          document.querySelector(".warning").style.display = "block";
+
+          //add histórico
+          if (data.chats.length > 0) {
+            data.chats.forEach((e) => {
+              //usuário
+              const divQuestion = document.createElement("div");
+              const pQuestion = document.createElement("p");
+
+              divQuestion.id = "perg";
+              divQuestion.className = "msgm-group";
+              pQuestion.textContent = e.user_chat;
+
+              divQuestion.appendChild(pQuestion);
+              hystory.appendChild(divQuestion);
+
+              //osvaldo
+              const divResp = document.createElement("div");
+              const pResp = document.createElement("p");
+
+              divResp.id = "resp";
+              divResp.className = "msgm-group";
+              divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
+              pResp.innerHTML = e.osvaldo_chat; //formatText(data.resp);
+
+              divResp.appendChild(pResp);
+              hystory.appendChild(divResp);
+            });
+          }
         })
         .catch((error) => {
           console.error("Erro:", error);
@@ -59,20 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="dot"></div>
     </section>
   `;
-
-  const loadHistory = () => {
-    const storedHistory = localStorage.getItem("chatHistory");
-    const history = storedHistory ? JSON.parse(storedHistory) : {};
-
-    return {
-      user: Array.isArray(history.user) ? history.user : [],
-      osvaldo: Array.isArray(history.osvaldo) ? history.osvaldo : [],
-    };
-  };
-
-  const saveHistory = (history) => {
-    localStorage.setItem("chatHistory", JSON.stringify(history));
-  };
 
   send.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -103,28 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     hystory.appendChild(loading);
 
-    // Atualizar histórico no localStorage
-    const historyLocal = loadHistory();
-    historyLocal.user.push(msgm);
-    if (historyLocal.user.length > 10) historyLocal.user.shift();
-    saveHistory(historyLocal);
-
     const response = await fetch("/chats/send/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         subject: origin,
         message: msgm,
-        history: getHistory(),
-        user: user_name.textContent,
+        user_id: user_id.textContent,
       }),
     });
 
     const data = await response.json();
-
-    historyLocal.osvaldo.push(data.resp);
-    if (historyLocal.osvaldo.length > 10) historyLocal.osvaldo.shift(); // Limitar a 5 mensagens
-    saveHistory(historyLocal);
 
     //adicionando a resposta da gemini AI no histórico
     const divResp = document.createElement("div");
@@ -143,11 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
     input.disabled = false;
     input.focus();
   });
-
-  const getHistory = () => {
-    const history = loadHistory(); // Reutiliza a função que já criamos
-    return history; // Retorna o objeto { user: [...], ia: [...] }
-  };
 
   function formatText(text) {
     // Formata blocos de texto com explicações e quebra de linhas
