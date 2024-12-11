@@ -42,7 +42,7 @@ const DeleteChat = async (userId, subject) => {
     const values = [userId, subject];
     const result = await pool.query(query, values);
 
-    return result.rows[0];
+    return result.rows;
   } catch (error) {
     console.error("Erro ao excluir chat:", error);
   }
