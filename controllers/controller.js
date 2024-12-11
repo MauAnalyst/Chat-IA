@@ -21,8 +21,15 @@ const Chatpages = (req, res) => {
   }
 };
 
-const AcessPages = (req, res) => {
+const AcessPages = async (req, res) => {
   const { processo, user_id } = req.params;
+
+  const chats = await ConsultChat(user_id, processo.toLowerCase());
+
+  if (!chats) {
+    console.log("sem conversa");
+  }
+
   try {
     res.render("layout", {
       title: processo,
@@ -30,6 +37,7 @@ const AcessPages = (req, res) => {
       content: `<span style="display: none">${DataPages[processo].span}</span>
       <h1>${DataPages[processo].title}</h1>
       <p>${DataPages[processo].text}<p>`,
+      chats,
     });
   } catch (error) {
     console.log(error);
@@ -37,43 +45,43 @@ const AcessPages = (req, res) => {
   }
 };
 
-const GetPageContent = (req, res) => {
+const GetPageContent = async (req, res) => {
   const { processo, user_id } = req.params;
 
-  console.log(user_id);
   try {
+    const chats = await ConsultChat(user_id, processo.toLowerCase());
+
+    if (!chats) {
+      console.log("sem conversa");
+    }
+
     res.json({
       title: processo,
       content: `<span style="display: none">${DataPages[processo].span}</span>
       <h1>${DataPages[processo].title}</h1>
       <p>${DataPages[processo].text}<p>`,
+      chats,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erro ao carregar conteúdo dinâmico.");
+    res.status(500).send("Erro ao carregar conteúdo.");
   }
 };
 
 const SendResp = async (req, res) => {
-  const { subject, message, history, user } = req.body;
+  const { subject, message, user_id } = req.body;
   try {
-    //search user
-
-    const chats = await pool.query("SELECT NOW() AS data_atual");
-    console.log(chats.rows[0]);
+    const history = await ConsultChat(user_id, subject.toLowerCase());
 
     const base = await ReadTab(subject.toLowerCase(), "base");
+    const response = await responseAI(
+      message,
+      history || "sem histórico",
+      base || "sem dados"
+    );
 
-    const response = await responseAI(message, history, base || "sem dados");
-
-    //adicionado conversa ao chat
-    // await addConversation(
-    //   user,
-    //   subject.toLowerCase(),
-    //   message,
-    //   response,
-    //   "history-chats"
-    // );
+    //adicionado conversa na base
+    await InsertChat(user_id, subject, message, response);
 
     res.json({ resp: `${response}` });
   } catch (error) {
