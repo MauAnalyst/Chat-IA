@@ -234,14 +234,21 @@ header {
   width: 100%;
 }
 
+.content-chat #history #resp p p {
+  margin-top: 1rem;
+}
+
+.content-chat #history #resp p > p:first-child {
+  margin-top: 0;
+}
+
 .content-chat #history #resp p ul {
-  margin: 1rem 0;
-  list-style: circle;
+  margin-bottom: 1rem;
+  list-style: disc;
 }
 
 .content-chat #history #resp p ul li {
-  margin: 0.3rem 0;
-  margin-left: 0.5rem;
+  margin: 1rem 0 1rem 0;
 }
 
 .content-chat #history #perg p {

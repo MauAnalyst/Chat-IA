@@ -10,8 +10,8 @@ import {
 const router = express.Router();
 
 router.get("/chats", Chatpages);
-router.get("/chats/:processo", AcessPages);
-router.get("/chats/c/:processo", GetPageContent);
+router.get("/chats/:processo/:user_id", AcessPages);
+router.get("/chats/c/:processo/:user_id", GetPageContent);
 router.post("/chats/send/message", SendResp);
 
 //router.get("/", RespIA);

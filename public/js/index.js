@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const user_id = document.querySelector("#user-profile #user_id");
   const user_name = document.querySelector("#user-profile #user_name");
 
   //navegando entre chats
@@ -25,14 +26,16 @@ document.addEventListener("DOMContentLoaded", () => {
       chatsGroup[i].style.backgroundColor = "var(--color5)";
 
       const chatTitle = titleChats[i].textContent.toLowerCase();
-      fetch(`/chats/c/${chatTitle}`, {
+      fetch(`/chats/c/${chatTitle}/${user_id.textContent}`, {
         method: "GET",
-        //body: user_name.textContent,
-        // params: chatTitle,
       })
         .then((response) => response.json())
         .then((data) => {
-          history.pushState(null, "", `/chats/${chatTitle}`);
+          history.pushState(
+            null,
+            "",
+            `/chats/${chatTitle}/${user_id.textContent}`
+          );
 
           document.querySelector(".content .title").innerHTML = data.content;
         })
