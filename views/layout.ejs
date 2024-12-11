@@ -8,21 +8,29 @@
     <link rel="stylesheet" href="/css/index.css" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_right_alt"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_right_altanddeleteandarrow_downward"
     />
   </head>
   <body>
-    <div id="user-profile" style="display: none">
-      <span id="user_id">MBS1729</span>
-      <span id="user_name">mauricio.santos</span>
+    <div id="user-profile">
+      <span style="display: none" id="user_id">MBS1729</span>
+      <span style="display: none" id="user_name">mauricio.santos</span>
+      <span class="material-symbols-outlined">delete</span>
     </div>
+
+    <div id="message-delete">
+      <div id="log-delete">Chat deletado</div>
+    </div>
+
     <header>
       <nav class="navbar">
         <div class="logo">
           <img src="/imgs/logo.png" alt="logo ia" />
-          <h2>Osvaldo</h2>
-          <h2>Suporte IA</h2>
-          <p>Desenvolvido por Mauricio Brito dos Santos</p>
+          <h2>
+            Osvaldo <br />
+            Suporte IA
+          </h2>
+          <!-- <p>Desenvolvido por Mauricio Brito dos Santos</p> -->
         </div>
         <ul class="chats">
           <li>
@@ -40,6 +48,15 @@
               <div class="text">
                 <h3>Geral</h3>
                 <p>Não sabe qual o processo?</p>
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="chat-group">
+              <img src="/imgs/ER.png" alt="erros logo" />
+              <div class="text">
+                <h3>Erros</h3>
+                <p>Log de erros e mais</p>
               </div>
             </a>
           </li>
@@ -110,15 +127,18 @@
       <div class="content-chat">
         <div id="history">
           <!-- adicionando o hystory chat -->
-          <% if (chats !== null){ %> <% chats.forEach(e => { %>
+          <% if (chats && chats.length > 0) { %> <% chats.forEach(e => { %>
           <div id="perg" class="msgm-group">
             <p><%= e.user_chat %></p>
           </div>
           <div id="resp" class="msgm-group">
             <img src="/imgs/logo.png" alt="logo ia" />
-            <p><%- e.osvaldo_chat%></p>
+            <div id="text-ai"><%- e.osvaldo_chat %></div>
           </div>
-          <% }) %> <% } %>
+          <% }) %> <% } else { %>
+          <!-- <p>Nenhuma conversa disponível.</p> -->
+          <% } %>
+
           <!-- <div id="perg" class="msgm-group">
             <p>Olá, tudo bem ?</p>
           </div>
@@ -139,6 +159,11 @@
           </div> -->
           <!-- fim hystory -->
         </div>
+
+        <div id="scroll-history">
+          <span class="material-symbols-outlined">arrow_downward</span>
+        </div>
+
         <form id="msg-user">
           <input
             type="text"

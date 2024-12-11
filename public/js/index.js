@@ -7,6 +7,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
   const chatsGroup = document.querySelectorAll(".chats .chat-group");
 
+  const historyChat = document.getElementById("history");
+  const scroll = document.querySelector("#scroll-history");
+  const buttonScroll = document.querySelector(
+    "#scroll-history .material-symbols-outlined"
+  );
+
+  const checkScrollPosition = () => {
+    const scrollTop = document.getElementById("history").scrollTop;
+    const scrollHeight = document.getElementById("history").scrollHeight;
+    const clientHeight = document.getElementById("history").clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+      scroll.style.display = "none";
+    } else {
+      scroll.style.display = "flex";
+    }
+  };
+
+  checkScrollPosition();
+
+  historyChat.addEventListener("scroll", checkScrollPosition);
+
+  buttonScroll.addEventListener("click", () => {
+    historyChat.scrollTop = historyChat.scrollHeight;
+  });
+
   titleChats.forEach((e, i) => {
     if (
       e.textContent.toUpperCase() === titleContent.textContent.toUpperCase()
@@ -20,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
       chatsGroup.forEach((e) => {
         e.style.backgroundColor = "transparent";
       });
+
+      scroll.style.display = "none";
 
       chatsGroup[i].style.backgroundColor = "var(--color5)";
       document.querySelector("#loading-chat").style.display = "flex";
@@ -50,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.querySelector(".warning").style.display = "block";
 
           //add histórico
-          if (data.chats.length > 0) {
+          if (data.chats) {
             data.chats.forEach((e) => {
               //usuário
               const divQuestion = document.createElement("div");
@@ -65,9 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
               //osvaldo
               const divResp = document.createElement("div");
-              const pResp = document.createElement("p");
+              const pResp = document.createElement("div");
 
               divResp.id = "resp";
+              pResp.id = "text-ai";
               divResp.className = "msgm-group";
               divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
               pResp.innerHTML = e.osvaldo_chat; //formatText(data.resp);
@@ -75,6 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
               divResp.appendChild(pResp);
               hystory.appendChild(divResp);
             });
+
+            checkScrollPosition();
           }
         })
         .catch((error) => {
@@ -127,6 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     hystory.appendChild(loading);
 
+    //scroll ao add msg
+    const scrollHeight = document.querySelector("#history").scrollHeight;
+    const clientHeight = document.querySelector("#history").clientHeight;
+
+    // if (scrollHeight > clientHeight) {
+    //   scroll.style.display = "flex";
+    // }
+
+    historyChat.scrollTop = scrollHeight;
+
     const response = await fetch("/chats/send/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -141,9 +182,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //adicionando a resposta da gemini AI no histórico
     const divResp = document.createElement("div");
-    const pResp = document.createElement("p");
+    const pResp = document.createElement("div");
 
     divResp.id = "resp";
+    pResp.id = "text-ai";
     divResp.className = "msgm-group";
     divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
     pResp.innerHTML = data.resp; //formatText(data.resp);
@@ -151,38 +193,65 @@ document.addEventListener("DOMContentLoaded", () => {
     divResp.appendChild(pResp);
     hystory.appendChild(divResp);
 
+    historyChat.scrollTop = scrollHeight;
+
+    //checkScrollPosition();
+
     // Remover carregamento e reativar input
     document.querySelector("#loading").remove();
     input.disabled = false;
     input.focus();
   });
 
-  function formatText(text) {
-    // Formata blocos de texto com explicações e quebra de linhas
-    let formattedText = text
-      .replace(/\n\*{4}(.*?)\*{4}\n/g, "\n\n**$1:**\n") // Negrito para seções importantes
-      .replace(/```javascript([\s\S]*?)```/g, "\n\n```javascript\n$1\n```\n") // Mantém blocos de código
-      .replace(/-\s\*\*(.*?)\*\*/g, "\n- **$1**") // Ajusta marcadores com negrito
-      .replace(/\*\*(.*?)\*\*/g, "**$1**") // Garante negrito para trechos destacados
-      .replace(/(\*{2}[A-Z].*?:\*{2})/g, "\n\n$1"); // Adiciona espaçamento antes de títulos
+  document
+    .querySelector("#user-profile .material-symbols-outlined")
+    .addEventListener("click", async () => {
+      const subject = document.querySelector(
+        ".content .title span"
+      ).textContent;
+      const user_id = document.querySelector(
+        "#user-profile #user_id"
+      ).textContent;
 
-    return formattedText;
-  }
+      const response = await fetch("/chats/delete-chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject,
+          user_id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data) {
+        if (data.resp === true) {
+          scroll.style.display = "none";
+
+          document.querySelector("#history").innerHTML = "";
+          showMessage();
+        }
+      }
+    });
 });
 
-// const history = document.getElementById("history");
+function showMessage() {
+  const messageDelete = document.getElementById("message-delete");
 
-// history.addEventListener("scroll", () => {
-//   const scrollTop = history.scrollTop; // Posição de rolagem atual do topo
-//   const scrollHeight = history.scrollHeight; // Altura total do conteúdo
-//   const clientHeight = history.clientHeight; // Altura visível do elemento
+  // Adiciona a classe para mostrar a mensagem
+  messageDelete.classList.add("show");
 
-//   // Verifica se está no final (ou próximo ao final)
-//   if (scrollTop + clientHeight >= scrollHeight - 10) {
-//     console.log("Chegou ao final do scroll");
-//   } else {
-//     console.log("Ainda não está no final");
-//   }
-// });
+  // Remove a mensagem após 3 segundos
+  setTimeout(() => {
+    messageDelete.classList.add("hide");
 
-//localStorage.clear();
+    // Remove o elemento completamente após a animação
+    setTimeout(() => {
+      messageDelete.classList.remove("show", "hide");
+    }, 1500); // Tempo para o fade-out terminar
+  }, 1500); // Tempo que a mensagem fica visível
+}
+
+// Chame a função para exibir a mensagem

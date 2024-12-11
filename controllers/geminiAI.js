@@ -19,19 +19,18 @@ const OsvalodResp = (question, history, base) => {
   `;
 };
 
-//const Prompt
-
-const AssistantAi = (question, history, base) => {
+const AssistantAi = (subject, question, history, base) => {
   return `
   Você é um assiste do osvaldo.
   Você analise todas as mensagens que passam antes de chegar nele, para definir se é termo técnico ou não.
-  Aqui está sua base de dados (tudo nela contido é conhecimento técnico) ${base}. 
-  Para responder isso aqui (questão): ${question}. Aqui está o histórico da conversa entre o osvaldo e o usuário (não mande para ele): ${history}. para elaborar a resposta se necessário.
+  Aqui está sua base de dados (tudo nela contido é conhecimento técnico) ${base}.
+  O assunto é esse ${subject} Para responder isso aqui (questão): ${question}. Aqui está o histórico da conversa (deste momento) entre o osvaldo e o usuário (não mande para ele): ${history}. para elaborar a resposta se necessário.
 
   Sua resposta deve ser assim (formato json):
 
     data: {
-    "question": "coloque a questão aqui por favor",
+    "subject": "coloque o assunto passado aqui"
+    "question": "coloque a questão passado aqui",
     "technical": "coloque true ou false, só vai ser false se a pergunta não for técnica ou se for saudações e cumprimento, mas se você considerar técnica, veja se não é genérica, por exemplo: emissão de NF,pode ser muitas coisas.
     "transaction": "coloque "null" se technical for false, mas se for true, coloque a transaçao que está na base de dados, deve ser somente uma"
     }
@@ -44,8 +43,8 @@ const ReadTxt = async (file) => {
   return data;
 };
 
-const returnAI = async (question, history, base) => {
-  const assistantAi = AssistantAi(question, history, base);
+const returnAI = async (subject, question, history, base) => {
+  const assistantAi = AssistantAi(subject, question, history, base);
   const model = geminiAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const resultAssistan = await model.generateContent(assistantAi);
 
@@ -70,10 +69,11 @@ const returnAI = async (question, history, base) => {
   return ResultOsvaldo.response.text();
 };
 
-const responseAI = async (question, history, base) => {
+const responseAI = async (subject, question, history, base) => {
   try {
     //const data = await fs.promises.readFile("./info_sgr.txt", "utf8");
     const response = await returnAI(
+      subject,
       question,
       JSON.stringify(history),
       JSON.stringify(base)
@@ -81,7 +81,7 @@ const responseAI = async (question, history, base) => {
     return response;
   } catch (err) {
     console.error(err);
-    return "Olá, me perdi aqui mano (deu erro no código kkkk). <br> Enfim, pode mandar sua pergunta de novo ?";
+    return "Me perdi aqui mano (deu erro no código kkkk). <br> Enfim, pode mandar sua pergunta de novo ?";
   }
 };
 

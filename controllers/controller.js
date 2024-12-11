@@ -2,7 +2,7 @@ import { DataPages } from "./pages.js";
 import { responseAI } from "./geminiAI.js";
 import { ReadTab, addConversation } from "./excel.js";
 import { pool } from "../configs/db.js";
-import { ConsultChat, InsertChat } from "../db/configTables.js";
+import { ConsultChat, InsertChat, DeleteChat } from "../db/configTables.js";
 
 const RespIA = (req, res) => {
   try {
@@ -24,11 +24,15 @@ const Chatpages = (req, res) => {
 const AcessPages = async (req, res) => {
   const { processo, user_id } = req.params;
 
-  const chats = await ConsultChat(user_id, processo.toLowerCase());
+  let chats = await ConsultChat(user_id, processo.toLowerCase());
 
-  if (!chats) {
-    console.log("sem conversa");
-  }
+  // console.log(chats);
+
+  // chats.forEach((e) => {
+  //   e.osvaldo_chat = `<p>${e.osvaldo_chat}</p>`;
+  // });
+
+  // console.log(chats);
 
   try {
     res.render("layout", {
@@ -51,10 +55,6 @@ const GetPageContent = async (req, res) => {
   try {
     const chats = await ConsultChat(user_id, processo.toLowerCase());
 
-    if (!chats) {
-      console.log("sem conversa");
-    }
-
     res.json({
       title: processo,
       content: `<span style="display: none">${DataPages[processo].span}</span>
@@ -75,6 +75,7 @@ const SendResp = async (req, res) => {
 
     const base = await ReadTab(subject.toLowerCase(), "base");
     const response = await responseAI(
+      subject,
       message,
       history || "sem histórico",
       base || "sem dados"
@@ -90,4 +91,26 @@ const SendResp = async (req, res) => {
   }
 };
 
-export { RespIA, Chatpages, AcessPages, GetPageContent, SendResp };
+const ClearChat = async (req, res) => {
+  const { subject, user_id } = req.body;
+
+  try {
+    let clear;
+    const response = await DeleteChat(user_id, subject);
+
+    if (response.length > 0) {
+      clear = true;
+    } else {
+      clear = false;
+    }
+
+    res.json({
+      resp: clear,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erro ao deletar chat");
+  }
+};
+
+export { RespIA, Chatpages, AcessPages, GetPageContent, SendResp, ClearChat };
