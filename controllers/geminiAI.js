@@ -33,7 +33,7 @@ const AssistantAi = (question, history, base) => {
     data: {
     "question": "coloque a questão aqui por favor",
     "technical": "coloque true ou false, só vai ser false se a pergunta não for técnica ou se for saudações e cumprimento, mas se você considerar técnica, veja se não é genérica, por exemplo: emissão de NF,pode ser muitas coisas.
-    "transaction": "coloque "null" se technical for false, mas se for true, coloque a transaçao com base na sua análise na base de dados, deve ser somente uma"
+    "transaction": "coloque "null" se technical for false, mas se for true, coloque a transaçao que está na base de dados, deve ser somente uma"
     }
 
   `;

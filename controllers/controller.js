@@ -1,6 +1,8 @@
 import { DataPages } from "./pages.js";
 import { responseAI } from "./geminiAI.js";
 import { ReadTab, addConversation } from "./excel.js";
+import { pool } from "../configs/db.js";
+import { ConsultChat, InsertChat } from "../db/configTables.js";
 
 const RespIA = (req, res) => {
   try {
@@ -20,7 +22,7 @@ const Chatpages = (req, res) => {
 };
 
 const AcessPages = (req, res) => {
-  const { processo } = req.params;
+  const { processo, user_id } = req.params;
   try {
     res.render("layout", {
       title: processo,
@@ -36,7 +38,9 @@ const AcessPages = (req, res) => {
 };
 
 const GetPageContent = (req, res) => {
-  const { processo } = req.params;
+  const { processo, user_id } = req.params;
+
+  console.log(user_id);
   try {
     res.json({
       title: processo,
@@ -54,10 +58,13 @@ const SendResp = async (req, res) => {
   const { subject, message, history, user } = req.body;
   try {
     //search user
-    const historyUser = await ReadTab(user, "history-chats");
+
+    const chats = await pool.query("SELECT NOW() AS data_atual");
+    console.log(chats.rows[0]);
 
     const base = await ReadTab(subject.toLowerCase(), "base");
-    const response = await responseAI(message, history, base);
+
+    const response = await responseAI(message, history, base || "sem dados");
 
     //adicionado conversa ao chat
     // await addConversation(
