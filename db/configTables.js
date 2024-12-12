@@ -51,7 +51,7 @@ const DeleteChat = async (userId, subject) => {
 const ConsultChat = async (userId, subject) => {
   try {
     const query = `
-    SELECT user_chat, osvaldo_chat FROM chats
+    SELECT id, user_chat, osvaldo_chat FROM chats
     WHERE user_id = $1 AND subject = $2
     `;
 
