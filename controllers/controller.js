@@ -24,15 +24,11 @@ const Chatpages = (req, res) => {
 const AcessPages = async (req, res) => {
   const { processo, user_id } = req.params;
 
-  let chats = await ConsultChat(user_id, processo.toLowerCase());
+  const chats = await ConsultChat(user_id, processo.toLowerCase());
 
-  // console.log(chats);
-
-  // chats.forEach((e) => {
-  //   e.osvaldo_chat = `<p>${e.osvaldo_chat}</p>`;
-  // });
-
-  // console.log(chats);
+  if (chats) {
+    chats.sort((a, b) => a.id - b.id);
+  }
 
   try {
     res.render("layout", {
@@ -54,6 +50,10 @@ const GetPageContent = async (req, res) => {
 
   try {
     const chats = await ConsultChat(user_id, processo.toLowerCase());
+
+    if (chats) {
+      chats.sort((a, b) => a.id - b.id);
+    }
 
     res.json({
       title: processo,

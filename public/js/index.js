@@ -135,6 +135,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const origin = document.querySelector(".content .title span").textContent;
     const msgm = input.value;
 
+    if (msgm === "") {
+      return;
+    }
+
     //trantando input
     input.value = "";
     input.disabled = true;
@@ -192,8 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     divResp.appendChild(pResp);
     hystory.appendChild(divResp);
-
-    historyChat.scrollTop = scrollHeight;
 
     //checkScrollPosition();
 
