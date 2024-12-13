@@ -1,5 +1,5 @@
 import { DataPages } from "./pages.js";
-import { responseAI } from "./geminiAI.js";
+import { responseAI } from "./osvaldoAI.js";
 import { ReadTab, addConversation } from "./excel.js";
 import { pool } from "../configs/db.js";
 import { ConsultChat, InsertChat, DeleteChat } from "../db/configTables.js";

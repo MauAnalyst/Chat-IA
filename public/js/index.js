@@ -205,6 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     input.focus();
   });
 
+  //deletando histórico
   document
     .querySelector("#user-profile .material-symbols-outlined")
     .addEventListener("click", async () => {
@@ -226,13 +227,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
       });
 
+      document.querySelector("#history").innerHTML = "";
+
       const data = await response.json();
 
       if (data) {
         if (data.resp === true) {
           scroll.style.display = "none";
-
-          document.querySelector("#history").innerHTML = "";
           showMessage();
         }
       }

@@ -9,13 +9,16 @@ dotenv.config();
 
 const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+//personalidade do osvaldo
 const persOslvado = `
   Sobre você:
-    Você é um assistente de suporte de sistemas, chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
+
+    Você é um assistente de suporte de sistemas, trabalha com sistemas SAP e PL/SQL, você chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
     O que você (Osvaldo) está fazendo? Respondendo a uma pergunta de um usuário. E se a pergunta for relacionado a algum erro, você tentar entregar a resposta para o usuário, sem muitos detalhes a não ser o que o usuário peça.
     Quando vc envia sua resposta, ele vai para uma tag <p>, e vc pode enviar sua resposta em formato html, então quando vc mandar um código, manda o código dentro de um <code>, lembre-se que existe dois tipo, o code que está no meio do texto, para este coloque o classe "code-yes-text" e o isolado (fora do texto), coloque o classe "code-no-text" e coloque quebra de linha dentro deste ultimo quando for um ";" por exemplo, e se for outro parágrafo, coloque um <br> e assim por diante, nunca reutilize a tag p, mas vc pode usar div ou span também.
   `;
 
+//resposta geral
 const GeralResp = (question, history, base) => {
   return `
     Sobre você:
@@ -114,11 +117,10 @@ const returnAI = async (subject, question, history, base) => {
 
         Dito isso, responda a questão: "${question}". utilize o historico da conversa "${JSON.stringify(
         history
-      )}" caso a pergunta for sem sentido sozinha. 
+      )}" caso a pergunta for sem sentido sozinha.
         `);
     } else if (result.length === 1) {
-      //let newBase = base.filter((item) => item.erro == result[0].id);
-
+      //procurando documentação
       let documentation = await ReadTxt(
         `./conhecimentos/erros/${result[0].id}.txt`
       );

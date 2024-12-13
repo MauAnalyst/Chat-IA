@@ -1,0 +1,5 @@
+Z_DEVOL_FOR é aonde é realizado emissão e notas devolução fornecedor por id, nela o saldo do estoque precisa estar no depósito MM do sap 0014.
+
+->TABELA DE CONTROLE: ZTABLE_DEVOL_001 e  ZTABLE_DEVOL_002
+
+...resto da documentação

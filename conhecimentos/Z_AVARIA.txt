@@ -1,0 +1,14 @@
+A Z_AVARIA é responsável pelo processo de avaria de materiais, onde é realizado classificações e emissão de NFI (Nota fiscal de Incineração).
+
+->TABELA DE CONTROLE: ZTABLE_AVARIA_001
+
+->pontos importantes:
+Quando o material está em bloqueado na MB52, os status na Z_AVARIA ficará como AV. (avariado)
+Quando o material está em controle de qualidade, os status na Z_AVARIA ficará como IC. (incineração)
+
+->depósitos MM do SAP:
+1001 - avaria interna (realizado dentro do centro de distribuição)
+1002 - avaria externa (realizado fora do centro de distribuição)
+
+...resto da documentação
+

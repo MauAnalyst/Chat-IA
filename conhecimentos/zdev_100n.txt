@@ -1,4 +1,0 @@
-Zdev_100n é aonde é realizado emissão e notas devolução fornecedor por id agrupamento, nela o saldo precisa estar no depósito, 114.
-
-uma ID agrupamento pode ter uma ou mais IDs etiquetas.
-

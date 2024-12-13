@@ -1,47 +1,35 @@
 Erro: Saldo não é igual a zero: xxx,xx débito: xxx,xx Crédito: xxx,xx
-O erro em questão é apresentado na MR8M ao tentar estornar uma nota de devolução fornecedor (ZE)
-Imagem 1:
+O erro em questão é apresentado na MR8M ao tentar estornar uma nota de devolução fornecedor
  
-
 Para resolver, será necessário realizar o cálculo dos impostos com base na nota de origem, veja os passos a seguir:
 1)	Primeiro passo – localizar a nota de origem
-A NFO estará localizada na aba “Síntese” no campo N doc.original conforme a imagem 2 abaixo:
-Imagem 2
- 
-
+A NFO estará localizada na aba “Síntese” no campo N doc.original.
 
 2)	Segundo passo – Procurar os materiais da devolução na nota de origem
 Como existem o material mais uma vez na nota origem como é o caso da imagem 3 abaixo, será necessário comparar quantidade e lote na nota de origem versos devolução
 
-
-Imagem 3
- 
-
 3)	Terceiro Passo – verificar os impostos e valores
-Para verificar os impostos, basta clicar em cima do material conforme analisado no segundo passo, terá uma aba impostos, basta clicar no mesmo, pronto, terá os valores e seus impostos conforme a imagem 4 abaixo:
+Para verificar os impostos, basta clicar em cima do material conforme analisado no segundo passo, terá uma aba impostos, basta clicar no mesmo, pronto, terá os valores e seus impostos igual abaixo:
 
-ICOF: Montante básico | 0     | 
-ICM1: Montante básico | taxa  | valor fiscal
-IPIS: Montante básico | 0     |
-
-Imagem 4 
-
+COFI: Montante básico | 0     | 
+ICMS: Montante básico | taxa  | valor fiscal
+PIS: Montante básico | 0     |
 
 4)	Quarto passo – Calcular os impostos
 
 Calculando o montante básico de devolução para cada imposto:
 
-ICOF: (MT / Qtd Original) * Qtd Devolução 
-ICM1: (MT / Qtd Original) * Qtd Devolução
-IPIS: (MT / Qtd Original) * Qtd Devolução
+COFI: (MT / Qtd Original) * Qtd Devolução 
+ICMS: (MT / Qtd Original) * Qtd Devolução
+PIS: (MT / Qtd Original) * Qtd Devolução
 
 Sendo “MT” o Montante básico da NFO, “Qtd Original” a quantidade de unidades da NFO,  e “Qtd Devolução” a quantidade de unidades da devolução,
 
-Após isso, agora vamos calcular o valor fiscal do imposto ICM1:
+Após isso, agora vamos calcular o valor fiscal do imposto ICMS:
 
 Valor fiscal = MT de dev * (taxa de imposto/100)
 
-OBS: esse valor fiscal só pertence ao ICM1, os demais não tem
+OBS: esse valor fiscal só pertence ao ICMS, os demais não tem
 
 Sendo “MT de dev” o montante básico de devolução, e taxa de imposto, todas informações localizadas conforme a imagem 4.
 
@@ -49,13 +37,12 @@ Sendo “MT de dev” o montante básico de devolução, e taxa de imposto, toda
 
 Após ter o cálculo dos impostos em mãos, basta realizar o ajuste na tabela J_1BNFSTX (sempre conferir o item), conforme a imagem 5 abaixo:
 
-Imagem 5
- 
 
 O campo BASE será o montante básico devolução, a RATE (taxa de imposto) tem que ser a mesma da origem, e o TAXVAL (valor fiscal) tem que ser o mesmo calculado por você.
 
 Após isso, basta seguir com o estorno na MR8M.
 
 Para Osvaldo:
-A resposta do cálculo tem que ser com "," e não ".", EX: "523,00"
+A resposta do cálculo tem que ser com "," e não ".", EX: "523,00".
+E use a regra matemática com precisão.
 Pergunte ao usuário os impostos encontrados na NFO, quantidade e taxa, para você mesmo fazer o cálculo.
