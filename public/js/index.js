@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const user_id = document.querySelector("#user-profile #user_id");
   const user_name = document.querySelector("#user-profile #user_name");
 
-  //navegando entre chats
+  //-------- navegando entre chats
   const titleContent = document.querySelector(".content .title span");
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
   const chatsGroup = document.querySelectorAll(".chats .chat-group");
@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  //-------- exibindo outra conversa
   chatsGroup.forEach((e, i) => {
     e.addEventListener("click", () => {
       chatsGroup.forEach((e) => {
@@ -99,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
               pResp.id = "text-ai";
               divResp.className = "msgm-group";
               divResp.innerHTML = '<img src="/imgs/logo.png" alt="logo ia" />';
-              pResp.innerHTML = e.osvaldo_chat; //formatText(data.resp);
+              pResp.innerHTML = e.osvaldo_chat;
 
               divResp.appendChild(pResp);
               hystory.appendChild(divResp);
@@ -114,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //Comunicação com a IA
+  //-------- mandando msgm a osvaldo
   const hystory = document.querySelector("#history");
   const send = document.querySelector("#to-send");
   const input = document.querySelector("#user_input");
@@ -146,30 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
     //adicionando a msgm do usuário no histórico
     const divQuestion = document.createElement("div");
     const pQuestion = document.createElement("p");
-
     divQuestion.id = "perg";
     divQuestion.className = "msgm-group";
     pQuestion.textContent = msgm;
-
     divQuestion.appendChild(pQuestion);
     hystory.appendChild(divQuestion);
 
     //exibir carragamento
     const loading = document.createElement("div");
-
     loading.id = "loading";
     loading.innerHTML = load;
-
     hystory.appendChild(loading);
 
     //scroll ao add msg
     const scrollHeight = document.querySelector("#history").scrollHeight;
-    const clientHeight = document.querySelector("#history").clientHeight;
-
-    // if (scrollHeight > clientHeight) {
-    //   scroll.style.display = "flex";
-    // }
-
     historyChat.scrollTop = scrollHeight;
 
     const response = await fetch("/chats/send/message", {
@@ -196,8 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     divResp.appendChild(pResp);
     hystory.appendChild(divResp);
-
-    //checkScrollPosition();
 
     // Remover carregamento e reativar input
     document.querySelector("#loading").remove();
