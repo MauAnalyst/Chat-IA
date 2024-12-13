@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import stringSimilarity from "string-similarity";
 import fs from "fs/promises";
 //import fs from "fs";
 import mammoth from "mammoth";
@@ -8,34 +9,20 @@ dotenv.config();
 
 const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const OsvalodResp = (question, history, base) => {
+const persOslvado = `
+  Sobre você:
+    Você é um assistente de suporte de sistemas, chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
+    O que você (Osvaldo) está fazendo? Respondendo a uma pergunta de um usuário. E se a pergunta for relacionado a algum erro, você tentar entregar a resposta para o usuário, sem muitos detalhes a não ser o que o usuário peça.
+    Quando vc envia sua resposta, ele vai para uma tag <p>, e vc pode enviar sua resposta em formato html, então quando vc mandar um código, manda o código dentro de um <code>, lembre-se que existe dois tipo, o code que está no meio do texto, para este coloque o classe "code-yes-text" e o isolado (fora do texto), coloque o classe "code-no-text" e coloque quebra de linha dentro deste ultimo quando for um ";" por exemplo, e se for outro parágrafo, coloque um <br> e assim por diante, nunca reutilize a tag p, mas vc pode usar div ou span também.
+  `;
+
+const GeralResp = (question, history, base) => {
   return `
     Sobre você:
-    Você é um assistente de suporte de sistemas, chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
+    ${persOslvado}
     Sua base de conhecimento está contido em (formato json): ${base}, use apenas se a perguntar fizer sentido com o que tem nessa base e nunca mande ela em formato json a menos que o usuário peça nesse formato.
-    Embora você prefira ser breve, gosta de fornecer detalhes quando a pergunta é realmente vaga ou genérica. Porém, sua prioridade é sempre garantir que o usuário entenda suas respostas. Se necessário, compartilha o máximo de informações que vierem à cabeça, para não parecer que não entende o assunto.
-    O que você (Osvaldo) está fazendo? Respondendo a uma pergunta de um usuário. E se a pergunta for relacionado a algum erro, você tentar entregar a resposta para o usuário, sem muitos delthes a não ser o que o usuário peça.
-    Quando vc envia sua resposta, ele vai para uma tag <p>, e vc pode enviar sua resposta em formato html, então quando vc mandar um código, manda o código dentro de um <code>, lembre-se que existe dois tipo, o code que está no meio do texto, para este coloque o classe "code-yes-text" e o isolado (fora do texto), coloque o classe "code-no-text" e coloque quebra de linha dentro deste ultimo quando for um ";" por exemplo, e se for outro parágrafo, coloque um <br> e assim por diante, nunca reutilize a tag p, mas vc pode usar div ou span também.
     Dito isso, por favor, responda à seguinte questão do usuário: ${question} (não repita ela para o usuário). Aqui está o histórico da conversa entre você e o usuário: ${history}. Dependendo da pergunta do usuário, pode ignorar o histórico.
-    Caso o usuário faça uma pergunta que você não entenda ou que pareça rude, responda com: "Não entendi, pode repetir com mais clareza?" e adicione a imagem de um gato se necessário: <img src='/imgs/cat.png' alt='gato confuso' style="width: 100px; height: 100px;"/>. MANDE ESSA IMAGEM APENAS NESSES CASOS.
-  `;
-};
-
-const AssistantAi = (subject, question, history, base) => {
-  return `
-  Você é um assiste do osvaldo.
-  Você analise todas as mensagens que passam antes de chegar nele, para definir se é termo técnico ou não.
-  Aqui está sua base de dados (tudo nela contido é conhecimento técnico) ${base}.
-  O assunto é esse ${subject} Para responder isso aqui (questão): ${question}. Aqui está o histórico da conversa (deste momento) entre o osvaldo e o usuário (não mande para ele): ${history}. é um histórico no momento atual para elaborar a resposta se necessário.
-
-  Sua resposta deve ser assim (formato json):
-
-    data: {
-    "id": "se for erro especificado pelo usuário que contenha na sua base, coloque a id aq, se não, pode deixar vazio",
-    "technical": "coloque true ou false, só vai ser false se a pergunta não for técnica ou se for saudações e cumprimento, mas se você considerar técnica, veja se não é genérica, por exemplo: emissão de NF,pode ser muitas coisas.
-    "transaction": "coloque "null" se technical for false, mas se for true, coloque a transaçao que está na base de dados, deve ser somente uma"
-    }
-
+    Caso o usuário faça uma pergunta que você não entenda ou que pareça rude, responda com: "Não entendi Seja mais claro" <img src='/imgs/cat.png' alt='gato confuso' style="width: 100px; height: 100px;"/>. MANDE ESSA IMAGEM APENAS NESSES CASOS.
   `;
 };
 
@@ -51,56 +38,118 @@ const ReadTxt = async (file) => {
 };
 
 const returnAI = async (subject, question, history, base) => {
-  const assistantAi = AssistantAi(subject, question, history, base);
   const model = geminiAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const resultAssistan = await model.generateContent(assistantAi);
 
-  const ajustResult = JSON.parse(
-    resultAssistan.response
-      .text()
-      .replace(/^```json\s*/, "")
-      .replace(/```/, "")
-  );
-
-  let prompt = "";
-
-  if (subject === "erros" && ajustResult.data.id !== "") {
-    const erro = await ReadTxt(
-      `./conhecimentos/erros/${ajustResult.data.id}.txt`
-    );
-    prompt = OsvalodResp(question, history, JSON.stringify(erro) || base);
-  } else {
-    if (
-      ajustResult.data.transaction &&
-      ajustResult.data.technical === true &&
-      ajustResult.data.subject !== "erros"
-    ) {
-      const checkBase = await ReadTxt(
-        `./conhecimentos/${ajustResult.data.transaction.toLowerCase()}.txt`
-      );
-      prompt = OsvalodResp(
-        question,
-        history,
-        JSON.stringify(checkBase) || base
-      );
-    } else {
-      prompt = OsvalodResp(question, history, base);
-    }
-  }
-
-  const ResultOsvaldo = await model.generateContent(prompt);
-
-  return ResultOsvaldo.response.text();
-};
-
-const responseAI = async (subject, question, history, base) => {
-  try {
-    const response = await returnAI(
-      subject,
+  let resp = "";
+  if (subject === "geral") {
+    const prompt = GeralResp(
       question,
       JSON.stringify(history),
       JSON.stringify(base)
     );
+    resp = await model.generateContent(prompt);
+  } else if (subject === "erros") {
+    //procurando o melhor resultado para definir a base
+    const erros = base.map((item) => item.erro);
+    const matchErros = stringSimilarity.findBestMatch(question, erros).ratings;
+
+    let result = matchErros.filter((item) => item.rating.toFixed(2) >= 0.3);
+    result = base.filter((item) => item.erro === result.target);
+
+    if (result.length === 0) {
+      //se não encontrar pelo erro, procura pela transação
+      const transErro = base.map((item) => item.transacao.toLowerCase());
+      const matchTrans = stringSimilarity.findBestMatch(
+        question.toLowerCase(),
+        transErro
+      ).ratings;
+
+      let transaction = matchTrans
+        .filter((item) => item.rating >= 0.3)
+        .map((item) => item.target)[0];
+
+      let data =
+        matchTrans.rating !== 0
+          ? base.filter((item) => item.transacao.toLowerCase() === transaction)
+          : [];
+
+      result = base.filter((item) => item.erro === data.target);
+    }
+
+    //caso ainda não ache, procura pelo histórico
+    if (history !== null && result.length === 0) {
+      let checkErro = "";
+      let dataUser = [];
+
+      history.forEach((e) => {
+        let check = stringSimilarity.findBestMatch(
+          e.user_chat,
+          erros
+        ).bestMatch;
+
+        if (check && check.rating >= 0.3) {
+          dataUser.push(check.target);
+        }
+      });
+
+      if (dataUser.length > 0) {
+        checkErro = base.filter(
+          (item) => item.erro === dataUser[dataUser.length - 1]
+        )[0];
+        result = [checkErro];
+      }
+    }
+
+    //enviando para a ia
+    if (result.length === 0 || result.length > 1) {
+      resp = await model.generateContent(`
+        Sobre você:
+        ${persOslvado}
+
+        Sua base de conhecimento é: "${JSON.stringify(
+          base
+        )}". nunca coloque essa base "crua" na sua resposta.
+
+        Caso o erro ou transação não estiver na base, diga que o erro não foi documentado.
+
+        Dito isso, responda a questão: "${question}". utilize o historico da conversa "${JSON.stringify(
+        history
+      )}" caso a pergunta for sem sentido sozinha. 
+        `);
+    } else if (result.length === 1) {
+      //let newBase = base.filter((item) => item.erro == result[0].id);
+
+      let documentation = await ReadTxt(
+        `./conhecimentos/erros/${result[0].id}.txt`
+      );
+      resp = await model.generateContent(`
+        Sobre você:
+        ${persOslvado}
+
+        Sua base de conhecimento é: "${JSON.stringify(documentation)}". 
+        Se possível tente resolver para o usuário se tiver todas as informações
+
+        Caso a base acima esteja vazio, considere esta outra: ${JSON.stringify(
+          base
+        )}, e fale para o usuário que você não possui mais detalhes pois não foi documentado.
+
+        Tente ajudar o usuário, se necessário vc pede informações (igual na base) para você mesmo resolver.
+
+        utilize o historico da conversa (ocorrendo nesse momento) "${JSON.stringify(
+          history
+        )}" para se ajudar na sua resposta. analise este principalmente a última msgm de vcs dois, pois a questão abaixo pode não fazer sentido por si só.
+
+        Dito isso, responda a questão: "${question}". 
+        `);
+    }
+  }
+
+  return resp.response.text();
+};
+
+const responseAI = async (subject, question, history, base) => {
+  try {
+    const response = await returnAI(subject, question, history, base);
     return response;
   } catch (err) {
     console.error(err);

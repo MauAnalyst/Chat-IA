@@ -57,4 +57,5 @@ O campo BASE será o montante básico devolução, a RATE (taxa de imposto) tem 
 Após isso, basta seguir com o estorno na MR8M.
 
 Para Osvaldo:
+A resposta do cálculo tem que ser com "," e não ".", EX: "523,00"
 Pergunte ao usuário os impostos encontrados na NFO, quantidade e taxa, para você mesmo fazer o cálculo.

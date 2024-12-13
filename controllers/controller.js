@@ -73,12 +73,16 @@ const SendResp = async (req, res) => {
   try {
     const history = await ConsultChat(user_id, subject.toLowerCase());
 
+    if (history) {
+      history.sort((a, b) => a.id - b.id);
+    }
+
     const base = await ReadTab(subject.toLowerCase(), "base");
     const response = await responseAI(
       subject,
       message,
-      history || "sem histórico",
-      base || "sem dados"
+      history || null,
+      base || null
     );
 
     //adicionado conversa na base
