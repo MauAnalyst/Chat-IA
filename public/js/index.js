@@ -243,18 +243,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function showMessage() {
   const messageDelete = document.getElementById("message-delete");
 
-  // Adiciona a classe para mostrar a mensagem
   messageDelete.classList.add("show");
 
-  // Remove a mensagem após 3 segundos
   setTimeout(() => {
     messageDelete.classList.add("hide");
 
-    // Remove o elemento completamente após a animação
     setTimeout(() => {
       messageDelete.classList.remove("show", "hide");
-    }, 1500); // Tempo para o fade-out terminar
-  }, 1500); // Tempo que a mensagem fica visível
+    }, 1500);
+  }, 1500);
 }
-
-// Chame a função para exibir a mensagem
