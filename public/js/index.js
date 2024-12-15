@@ -205,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "#user-profile #user_id"
       ).textContent;
 
+      document.querySelector("#history").innerHTML = "";
+
       const response = await fetch("/chats/delete-chat", {
         method: "POST",
         headers: {
@@ -215,8 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
           user_id,
         }),
       });
-
-      document.querySelector("#history").innerHTML = "";
 
       const data = await response.json();
 

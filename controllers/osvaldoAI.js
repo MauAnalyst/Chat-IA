@@ -13,9 +13,20 @@ const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const persOslvado = `
   Sobre você:
 
-    Você é um assistente de suporte de sistemas, trabalha com sistemas SAP e PL/SQL, você chamado Osvaldo, sempre gentil, humorado e empolgado, mas direto ao ponto e de poucas palavras, não fala muito caso não haja necessidade. Às vezes, é sucinto e fala apenas o necessário. Você entra sempre na brincadeira.
-    O que você (Osvaldo) está fazendo? Respondendo a uma pergunta de um usuário. E se a pergunta for relacionado a algum erro, você tentar entregar a resposta para o usuário, sem muitos detalhes a não ser o que o usuário peça.
-    Quando vc envia sua resposta, ele vai para uma tag <p>, e vc pode enviar sua resposta em formato html, então quando vc mandar um código, manda o código dentro de um <code>, lembre-se que existe dois tipo, o code que está no meio do texto, para este coloque o classe "code-yes-text" e o isolado (fora do texto), coloque o classe "code-no-text" e coloque quebra de linha dentro deste ultimo quando for um ";" por exemplo, e se for outro parágrafo, coloque um <br> e assim por diante, nunca reutilize a tag p, mas vc pode usar div ou span também.
+    Você é um assistente de suporte de sistemas chamado Osvaldo. Trabalha com sistemas SAP e PL/SQL. Sua personalidade é gentil, bem-humorada e direta ao ponto, preferindo respostas curtas e objetivas, mas claras e relevantes. Você é flexível e entra nas brincadeiras quando apropriado, mas evita falar além do necessário.
+
+    Sua tarefa:
+    - Responder a perguntas de usuários.
+    - Caso a pergunta seja sobre um erro, forneça a solução de forma objetiva, detalhando apenas se solicitado pelo usuário.
+    - Seja sempre claro em sua explicação, destacando apenas os detalhes que realmente importam.
+
+    Sobre o formato de resposta:
+    - Você deve utilizar tags HTML em suas respostas.
+    - Quando enviar códigos:
+      1. Se o código estiver no meio do texto, use a tag <code> com a classe "code-yes-text".
+      2. Se o código for isolado (fora do texto), use a tag <code> com a classe "code-no-text" e:
+         - Insira quebras de linha (<br>) quando houver um ";" ou para separar parágrafos.
+         - Não reutilize a tag <p>, mas pode usar <div> ou <span> conforme necessário.
   `;
 
 //resposta geral
@@ -25,7 +36,6 @@ const GeralResp = (question, history, base) => {
     ${persOslvado}
     Sua base de conhecimento está contido em (formato json): ${base}, use apenas se a perguntar fizer sentido com o que tem nessa base e nunca mande ela em formato json a menos que o usuário peça nesse formato.
     Dito isso, por favor, responda à seguinte questão do usuário: ${question} (não repita ela para o usuário). Aqui está o histórico da conversa entre você e o usuário: ${history}. Dependendo da pergunta do usuário, pode ignorar o histórico.
-    Caso o usuário faça uma pergunta que você não entenda ou que pareça rude, responda com: "Não entendi Seja mais claro" <img src='/imgs/cat.png' alt='gato confuso' style="width: 100px; height: 100px;"/>. MANDE ESSA IMAGEM APENAS NESSES CASOS.
   `;
 };
 
@@ -44,7 +54,7 @@ const returnAI = async (subject, question, history, base) => {
   const model = geminiAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   let resp = "";
-  if (subject === "geral") {
+  if (subject === "geral" || subject === "chamados") {
     const prompt = GeralResp(
       question,
       JSON.stringify(history),
@@ -57,7 +67,10 @@ const returnAI = async (subject, question, history, base) => {
     const matchErros = stringSimilarity.findBestMatch(question, erros).ratings;
 
     let result = matchErros.filter((item) => item.rating.toFixed(2) >= 0.3);
-    result = base.filter((item) => item.erro === result.target);
+
+    if (!result) {
+      result = base.filter((item) => item.erro === result[0].target);
+    }
 
     if (result.length === 0) {
       //se não encontrar pelo erro, procura pela transação
@@ -144,6 +157,37 @@ const returnAI = async (subject, question, history, base) => {
         Dito isso, responda a questão: "${question}". 
         `);
     }
+  } else {
+    let result = [];
+    const transactions = base.map((item) => item.transacao.toLowerCase());
+    const text = base.map((item) => item.texto.toLowerCase());
+
+    let matchTrans = stringSimilarity.findBestMatch(
+      question.toLowerCase(),
+      transactions
+    ).ratings;
+    let matchText = stringSimilarity.findBestMatch(
+      question.toLowerCase(),
+      text
+    ).ratings;
+
+    //procura pela transação
+    let checkTrans = matchTrans.filter((item) => item.rating >= 0.4);
+    //result = base.filter(item => item.)
+    console.log(checkTrans);
+
+    resp = await model.generateContent(`
+      Sobre você:
+      ${persOslvado}
+
+      Sua base de conhecimento está aqui: ${JSON.stringify(base)}, 
+
+      utilize o historico da conversa (ocorrendo nesse momento) "${JSON.stringify(
+        history
+      )}" para ajudar na sua resposta. analise este principalmente a última msgm de vcs dois, pois a questão abaixo pode não fazer sentido por si só.
+
+      Dito isso, responda a questão: "${question}". 
+      `);
   }
 
   return resp.response.text();
