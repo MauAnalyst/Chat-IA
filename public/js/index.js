@@ -41,6 +41,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  //-------- carregando imagem
+  // Selecionando elementos
+  const imageInput = document.getElementById("image");
+  const previewContainer = document.getElementById("preview-image");
+  const previewImage = document.querySelector("#preview-image img");
+  const closeButton = document.getElementById("close");
+
+  // Manipulador para exibir a imagem no preview
+  imageInput.addEventListener("change", function (e) {
+    const file = e.target.files[0]; // Obtém o arquivo selecionado
+    if (file) {
+      const reader = new FileReader(); // Permite ler o conteúdo do arquivo
+      reader.onload = function (event) {
+        previewImage.src = event.target.result; // Define o src da imagem
+        previewContainer.style.display = "block"; // Exibe o preview
+      };
+      reader.readAsDataURL(file); // Converte o arquivo em uma URL base64
+    }
+  });
+
+  // Manipulador para fechar o preview
+  closeButton.addEventListener("click", function () {
+    previewImage.src = ""; // Remove a imagem do preview
+    previewContainer.style.display = "none"; // Esconde o preview
+    imageInput.value = ""; // Reseta o input de arquivo
+  });
+
   //-------- exibindo outra conversa
   chatsGroup.forEach((e, i) => {
     e.addEventListener("click", () => {
@@ -87,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
               divQuestion.id = "perg";
               divQuestion.className = "msgm-group";
-              pQuestion.textContent = e.user_chat;
+              pQuestion.innerHTML = e.user_chat;
 
               divQuestion.appendChild(pQuestion);
               hystory.appendChild(divQuestion);
@@ -113,33 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("Erro:", error);
         });
     });
-  });
-
-  //-------- carregando imagem
-  // Selecionando elementos
-  const imageInput = document.getElementById("image");
-  const previewContainer = document.getElementById("preview-image");
-  const previewImage = document.querySelector("#preview-image img");
-  const closeButton = document.getElementById("close");
-
-  // Manipulador para exibir a imagem no preview
-  imageInput.addEventListener("change", function (e) {
-    const file = e.target.files[0]; // Obtém o arquivo selecionado
-    if (file) {
-      const reader = new FileReader(); // Permite ler o conteúdo do arquivo
-      reader.onload = function (event) {
-        previewImage.src = event.target.result; // Define o src da imagem
-        previewContainer.style.display = "block"; // Exibe o preview
-      };
-      reader.readAsDataURL(file); // Converte o arquivo em uma URL base64
-    }
-  });
-
-  // Manipulador para fechar o preview
-  closeButton.addEventListener("click", function () {
-    previewImage.src = ""; // Remove a imagem do preview
-    previewContainer.style.display = "none"; // Esconde o preview
-    imageInput.value = ""; // Reseta o input de arquivo
   });
 
   //-------- mandando msgm a osvaldo
@@ -170,19 +170,48 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    //dados do formulário
+    const formData = new FormData();
+    formData.append("subject", origin); // Adiciona o "subject"
+    formData.append("message", msgm);
+    formData.append("user_id", userId.value);
+
+    //checkando se há imagem
+    if (imageInput.files[0]) {
+      formData.append("image", imageInput.files[0]);
+      previewImage.alt = "preview-on";
+    }
+
     //trantando input
     input.value = "";
     input.disabled = true;
 
+    let imgElement = null;
+    console.log(previewImage.alt);
+    if (previewImage.alt === "preview-on") {
+      imgElement = document.createElement("img");
+      imgElement.src = previewImage.src;
+      imgElement.alt = "imagem enviada";
+    }
+
     previewImage.src = ""; // Remove a imagem do preview
     previewContainer.style.display = "none"; // Esconde o preview
+    imageInput.value = "";
 
     //adicionando a msgm do usuário no histórico
     const divQuestion = document.createElement("div");
     const pQuestion = document.createElement("p");
+    const spanMsgm = document.createElement("span");
     divQuestion.id = "perg";
+    spanMsgm.textContent = msgm;
     divQuestion.className = "msgm-group";
-    pQuestion.textContent = msgm;
+    if (imgElement) {
+      console.log("entrou aq", imgElement);
+      pQuestion.appendChild(imgElement);
+      pQuestion.appendChild(document.createElement("br"));
+    }
+    pQuestion.appendChild(spanMsgm);
+    //pQuestion.innerHTML += `<br> ${msgm}`;
     divQuestion.appendChild(pQuestion);
     hystory.appendChild(divQuestion);
 
@@ -195,21 +224,6 @@ document.addEventListener("DOMContentLoaded", () => {
     //scroll ao add msg
     const scrollHeight = document.querySelector("#history").scrollHeight;
     historyChat.scrollTop = scrollHeight;
-
-    //dados do formulário
-    const formData = new FormData();
-    formData.append("subject", origin); // Adiciona o "subject"
-    formData.append("message", msgm);
-    formData.append("user_id", userId.value);
-
-    //checkando se há imagem
-    if (imageInput.files[0]) {
-      formData.append("image", imageInput.files[0]);
-    }
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
 
     const response = await fetch("/chats/send/message", {
       method: "POST",
@@ -239,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Remover carregamento e reativar input
     document.querySelector("#loading").remove();
+    previewImage.alt = "preview-off";
     input.disabled = false;
     input.focus();
   });
@@ -283,6 +298,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ).textContent;
 
       document.querySelector("#history").innerHTML = "";
+      scroll.style.display = "none";
+      showMessage();
 
       const response = await fetch("/chats/delete-chat", {
         method: "POST",
@@ -297,12 +314,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      if (data) {
-        if (data.resp === true) {
-          scroll.style.display = "none";
-          showMessage();
-        }
-      }
+      // if (data) {
+      //   if (data.resp === true) {
+      //     scroll.style.display = "none";
+      //     showMessage();
+      //   }
+      // }
     });
 });
 

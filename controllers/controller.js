@@ -1,4 +1,5 @@
 import { DataPages } from "./pages.js";
+import { ImageReader } from "../configs/tesseract.js";
 import { responseAI } from "./osvaldoAI.js";
 import { ReadTab, addConversation } from "./excel.js";
 import { pool } from "../configs/db.js";
@@ -71,9 +72,18 @@ const GetPageContent = async (req, res) => {
 const SendResp = async (req, res) => {
   const { subject, message, user_id } = req.body;
 
+  let userMessage = message;
+  let messageDB = message;
+
   if (req.file) {
     const { filename, path: filePath } = req.file;
-    console.log(filename, filePath);
+    const reader = await ImageReader(filePath);
+
+    let updatedPath = filePath.replace(/\\/g, "/").slice(6);
+    console.log(updatedPath);
+
+    userMessage = `[${userMessage}: ${reader}]`;
+    messageDB = `<img src="${updatedPath}" alt=${filename}> <br> ${message}`;
   }
   try {
     const history = await ConsultChat(user_id, subject.toLowerCase());
@@ -85,13 +95,13 @@ const SendResp = async (req, res) => {
     const base = await ReadTab(subject.toLowerCase(), "base");
     const response = await responseAI(
       subject,
-      message,
+      userMessage,
       history || null,
       base || null
     );
 
     //adicionado conversa na base
-    await InsertChat(user_id, subject, message, response);
+    await InsertChat(user_id, subject, messageDB, response);
 
     res.json({ resp: `${response}` });
   } catch (error) {

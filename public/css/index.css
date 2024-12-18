@@ -83,7 +83,7 @@ header {
 
 #message-delete #log-delete {
   padding: 1rem;
-  background-color: #ff4500;
+  background-color: #de4747;
   border-radius: 0.5rem;
   color: var(--color6);
 }
@@ -342,6 +342,13 @@ header {
   border-radius: 1rem;
 }
 
+.content-chat #history #perg img {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 0.5rem;
+  border: 0.1rem solid var(--color5);
+}
+
 .content-chat #msg-user {
   position: relative;
   width: 100%;
@@ -373,7 +380,6 @@ header {
 
 .content-chat #msg-user #preview-image img {
   max-width: 200px;
-  filter: blur(0.1px);
 }
 
 .content-chat #msg-user #preview-image .material-symbols-outlined {

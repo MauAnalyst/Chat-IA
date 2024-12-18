@@ -68,7 +68,7 @@ const returnAI = async (subject, question, history, base) => {
 
     let result = matchErros.filter((item) => item.rating.toFixed(2) >= 0.3);
 
-    if (!result) {
+    if (result.length > 0) {
       result = base.filter((item) => item.erro === result[0].target);
     }
 

@@ -129,7 +129,7 @@
           <!-- adicionando o hystory chat -->
           <% if (chats && chats.length > 0) { %> <% chats.forEach(e => { %>
           <div id="perg" class="msgm-group">
-            <p><%= e.user_chat %></p>
+            <p><%- e.user_chat %></p>
           </div>
           <div id="resp" class="msgm-group">
             <img src="/imgs/logo.png" alt="logo ia" />
@@ -175,7 +175,7 @@
           <div class="inputs">
             <div id="preview-image" style="display: none">
               <span class="material-symbols-outlined" id="close">close</span>
-              <img src="" alt="cat-image" />
+              <img src="null" alt="preview-off" />
             </div>
             <input
               type="text"
