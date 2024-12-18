@@ -75,7 +75,7 @@ header {
   position: fixed;
   display: flex;
   justify-content: end;
-  bottom: 20%;
+  bottom: 30%;
   /* right: 5%; */
   right: -100%;
   transition: all 0.5s ease, opacity 1.5s ease;
@@ -238,13 +238,14 @@ header {
 
 #scroll-history {
   position: absolute;
-  bottom: 20%;
-  right: 50%;
+  bottom: 30%;
+  right: 45%;
   max-width: 550px;
   display: flex;
   justify-content: center;
   margin: 0 auto;
   display: none;
+  z-index: 1;
 }
 
 #scroll-history .material-symbols-outlined {
@@ -342,14 +343,48 @@ header {
 }
 
 .content-chat #msg-user {
+  position: relative;
   width: 100%;
   max-width: 550px;
   margin: auto;
   display: flex;
+  align-items: end;
   background-color: var(--color6);
   border: 0.01rem solid var(--color5);
   padding: 0.2rem;
   border-radius: 1.2rem;
+}
+
+.content-chat #msg-user .inputs {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-chat #msg-user #preview-image {
+  max-width: 150px;
+  margin-left: 0.5rem;
+  max-height: 50px;
+  overflow: hidden;
+  border: 0.1rem solid var(--color5);
+  border-radius: 1rem;
+  position: relative;
+}
+
+.content-chat #msg-user #preview-image img {
+  max-width: 200px;
+  filter: blur(0.1px);
+}
+
+.content-chat #msg-user #preview-image .material-symbols-outlined {
+  position: absolute;
+  right: 0;
+  margin: 0.2rem 0.2rem 0 0;
+  font-size: 1.3rem;
+  cursor: pointer;
+  background-color: var(--color6);
+  border-radius: 50%;
+  z-index: 1;
 }
 
 .content-chat #msg-user input[type="text"] {
@@ -357,7 +392,35 @@ header {
   width: 100%;
   border: none;
   padding: 0.5rem;
+  padding-left: 0.7rem;
   background-color: transparent;
+}
+
+.content-chat #msg-user #upload-image {
+  display: flex;
+  margin: 0 0.2rem;
+}
+
+.content-chat #msg-user #upload-image label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  /* background-color: var(--color1); */
+  font-weight: bold;
+  border-radius: 1rem;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in;
+  /* color: var(--color6); */
+}
+
+.content-chat #msg-user #upload-image label:hover {
+  background-color: var(--color5);
+}
+
+.content-chat #msg-user #upload-image label .material-symbols-outlined {
+  font-size: 1.2rem;
 }
 
 .content-chat #msg-user input[type="text"]:focus {

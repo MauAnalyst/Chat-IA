@@ -115,6 +115,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  //-------- carregando imagem
+  // Selecionando elementos
+  const imageInput = document.getElementById("image");
+  const previewContainer = document.getElementById("preview-image");
+  const previewImage = document.querySelector("#preview-image img");
+  const closeButton = document.getElementById("close");
+
+  // Manipulador para exibir a imagem no preview
+  imageInput.addEventListener("change", function (e) {
+    const file = e.target.files[0]; // Obtém o arquivo selecionado
+    if (file) {
+      const reader = new FileReader(); // Permite ler o conteúdo do arquivo
+      reader.onload = function (event) {
+        previewImage.src = event.target.result; // Define o src da imagem
+        previewContainer.style.display = "block"; // Exibe o preview
+      };
+      reader.readAsDataURL(file); // Converte o arquivo em uma URL base64
+    }
+  });
+
+  // Manipulador para fechar o preview
+  closeButton.addEventListener("click", function () {
+    previewImage.src = ""; // Remove a imagem do preview
+    previewContainer.style.display = "none"; // Esconde o preview
+    imageInput.value = ""; // Reseta o input de arquivo
+  });
+
   //-------- mandando msgm a osvaldo
   const hystory = document.querySelector("#history");
   const send = document.querySelector("#to-send");
@@ -135,14 +162,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const origin = document.querySelector(".content .title span").textContent;
     const msgm = input.value;
+    const userId = document.querySelector("#userId");
+    const subject = document.querySelector("#subject");
 
-    if (msgm === "") {
+    if (msgm === "" && imageInput.files.length === 0) {
+      console.log("caiu aq?");
       return;
     }
 
     //trantando input
     input.value = "";
     input.disabled = true;
+
+    previewImage.src = ""; // Remove a imagem do preview
+    previewContainer.style.display = "none"; // Esconde o preview
 
     //adicionando a msgm do usuário no histórico
     const divQuestion = document.createElement("div");
@@ -163,14 +196,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollHeight = document.querySelector("#history").scrollHeight;
     historyChat.scrollTop = scrollHeight;
 
+    //dados do formulário
+    const formData = new FormData();
+    formData.append("subject", origin); // Adiciona o "subject"
+    formData.append("message", msgm);
+    formData.append("user_id", userId.value);
+
+    //checkando se há imagem
+    if (imageInput.files[0]) {
+      formData.append("image", imageInput.files[0]);
+    }
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
     const response = await fetch("/chats/send/message", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subject: origin,
-        message: msgm,
-        user_id: user_id.textContent,
-      }),
+      //headers: { "Content-Type": "application/json" },
+      body: formData,
+      // body: JSON.stringify({
+      //   subject: origin,
+      //   message: msgm,
+      //   user_id: user_id.textContent,
+      // }),
     });
 
     const data = await response.json();
@@ -192,6 +241,34 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#loading").remove();
     input.disabled = false;
     input.focus();
+  });
+
+  //adicionando imagem com Ctrl + v
+  input.addEventListener("paste", (event) => {
+    const clipboardItems = event.clipboardData.items;
+
+    for (const item of clipboardItems) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+
+        // Atualiza o input file com a imagem colada
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        imageInput.files = dataTransfer.files;
+
+        // Mostra a imagem no preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImage.src = e.target.result;
+          previewContainer.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+
+        // Bloqueia o comportamento padrão
+        event.preventDefault();
+        break;
+      }
+    }
   });
 
   //deletando histórico

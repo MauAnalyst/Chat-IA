@@ -70,6 +70,11 @@ const GetPageContent = async (req, res) => {
 
 const SendResp = async (req, res) => {
   const { subject, message, user_id } = req.body;
+
+  if (req.file) {
+    const { filename, path: filePath } = req.file;
+    console.log(filename, filePath);
+  }
   try {
     const history = await ConsultChat(user_id, subject.toLowerCase());
 
