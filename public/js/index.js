@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const user_id = document.querySelector("#user-profile #user_id");
-  const user_name = document.querySelector("#user-profile #user_name");
-
   //-------- navegando entre chats
   const titleContent = document.querySelector(".content .title span");
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
@@ -87,16 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".warning").style.display = "none";
 
       const chatTitle = titleChats[i].textContent.toLowerCase();
-      fetch(`/chats/c/${chatTitle}/${user_id.textContent}`, {
+      fetch(`/chats/c/${chatTitle}`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((data) => {
-          history.pushState(
-            null,
-            "",
-            `/chats/${chatTitle}/${user_id.textContent}`
-          );
+          history.pushState(null, "", `/chats/${chatTitle}`);
 
           document.querySelector("#loading-chat").style.display = "none";
 
@@ -160,21 +153,18 @@ document.addEventListener("DOMContentLoaded", () => {
   send.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const origin = document.querySelector(".content .title span").textContent;
-    const msgm = input.value;
-    const userId = document.querySelector("#userId");
-    const subject = document.querySelector("#subject");
+    const subject = document.querySelector(".content .title span").textContent;
+    const message = input.value;
 
-    if (msgm === "" && imageInput.files.length === 0) {
+    if (message === "" && imageInput.files.length === 0) {
       console.log("caiu aq?");
       return;
     }
 
     //dados do formulário
     const formData = new FormData();
-    formData.append("subject", origin); // Adiciona o "subject"
-    formData.append("message", msgm);
-    formData.append("user_id", userId.value);
+    formData.append("subject", subject);
+    formData.append("message", message);
 
     //checkando se há imagem
     if (imageInput.files[0]) {
@@ -203,10 +193,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const pQuestion = document.createElement("p");
     const spanMsgm = document.createElement("span");
     divQuestion.id = "perg";
-    spanMsgm.textContent = msgm;
+    spanMsgm.textContent = message;
     divQuestion.className = "msgm-group";
     if (imgElement) {
-      console.log("entrou aq", imgElement);
       pQuestion.appendChild(imgElement);
       pQuestion.appendChild(document.createElement("br"));
     }
@@ -287,40 +276,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   //deletando histórico
-  document
-    .querySelector("#user-profile .material-symbols-outlined")
-    .addEventListener("click", async () => {
-      const subject = document.querySelector(
-        ".content .title span"
-      ).textContent;
-      const user_id = document.querySelector(
-        "#user-profile #user_id"
-      ).textContent;
+  document.querySelector("#delete-chat").addEventListener("click", async () => {
+    const subject = document.querySelector(".content .title span").textContent;
 
-      document.querySelector("#history").innerHTML = "";
-      scroll.style.display = "none";
-      showMessage();
+    if (document.querySelector("#history").innerHTML === "") {
+      return;
+    }
 
-      const response = await fetch("/chats/send/delete-chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subject,
-          user_id,
-        }),
-      });
+    profileInfos.style.display = "none";
+    profileInfos.style.opacity = "0";
+    iconProfile.style.transform = "rotate(0deg)";
 
-      const data = await response.json();
+    document.querySelector("#history").innerHTML = "";
+    scroll.style.display = "none";
+    showMessage();
 
-      // if (data) {
-      //   if (data.resp === true) {
-      //     scroll.style.display = "none";
-      //     showMessage();
-      //   }
-      // }
+    const response = await fetch("/chats/send/delete-chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        subject,
+      }),
     });
+
+    const data = await response.json();
+
+    // if (data) {
+    //   if (data.resp === true) {
+    //     scroll.style.display = "none";
+    //     showMessage();
+    //   }
+    // }
+  });
 });
 
 function showMessage() {

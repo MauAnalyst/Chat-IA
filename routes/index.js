@@ -16,8 +16,8 @@ const { requiresAuth } = auth0;
 router.get("/", HomePage);
 
 router.get("/chats", requiresAuth(), Chatpages);
-router.get("/chats/:processo", requiresAuth(), AcessPages);
-router.get("/chats/c/:processo", requiresAuth(), GetPageContent);
+router.get("/chats/:process", requiresAuth(), AcessPages);
+router.get("/chats/c/:subject", requiresAuth(), GetPageContent);
 router.post(
   "/chats/send/message",
   requiresAuth(),

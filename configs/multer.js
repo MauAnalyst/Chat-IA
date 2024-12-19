@@ -5,8 +5,9 @@ import fs from "fs";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const baseDir = "public/uploads/chats_images";
-    const { user_id, subject } = req.body;
-    const fullPath = path.join(baseDir, user_id, subject);
+    const user_id = req.oidc.user.sub;
+    const { subject } = req.body;
+    const fullPath = path.join(baseDir, subject);
 
     fs.mkdirSync(fullPath, { recursive: true });
 

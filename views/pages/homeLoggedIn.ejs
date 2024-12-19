@@ -1,0 +1,28 @@
+<div class="container-profile">
+  <div id="user-profile">
+    <img src="<%=login.user_picture%>" alt="" />
+    <span class="material-symbols-outlined">arrow_drop_down</span>
+  </div>
+  <div id="user-infos">
+    <p>
+      Olá, <br />
+      <%= login.user_name %>
+    </p>
+    <p><%= login.user_email %></p>
+    <div class="options">
+      <a href="/logout">
+        <span class="material-symbols-outlined">logout</span>
+        logout
+      </a>
+    </div>
+  </div>
+</div>
+<div class="logo">
+  <img src="/imgs/logo.png" alt="logo gemini" />
+  <h2>Osvaldo - Suporte IA</h2>
+</div>
+<h1>Olá <%= login.user_name %>, seja bem-vindo.</h1>
+<p class="text">Agora você já pode começar sua conversa com Osvaldo IA ✨</p>
+<button type="button"><a href="/chats">Começar Conversa</a></button>
+
+<script src="/js/profile.js"></script>

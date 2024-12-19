@@ -46,15 +46,19 @@ const HomePage = async (req, res) => {
     : null;
 
   try {
+    let layout = "";
     if (login) {
       const checkUserChat = await ConsultUser(login.user_id);
 
       if (!checkUserChat) {
         await login.saveUser();
       }
+      layout = "homeLoggedIn";
+    } else {
+      layout = "homeLoggedOut";
     }
 
-    res.render("home", { login });
+    res.render("home", { login, layout });
   } catch (error) {
     console.log("Erro ao carregar a página:", error);
     res.status(500).send("Erro ao carregar a página.");
@@ -63,7 +67,7 @@ const HomePage = async (req, res) => {
 
 const Chatpages = (req, res) => {
   try {
-    res.redirect("/chats/geral");
+    res.redirect("/chats/chamados");
   } catch (error) {
     console.log(error);
     res.status(500).send("Erro ao carregar a página.");
@@ -71,14 +75,20 @@ const Chatpages = (req, res) => {
 };
 
 const AcessPages = async (req, res) => {
-  const user_name = req.oidc.user.name;
-  const user_id = req.oidc.user.sub;
-  const user_email = req.oidc.user.email;
-  const user_picture = req.oidc.user.picture;
+  let login = new UserLogin(
+    req.oidc.user.sub,
+    req.oidc.user.name,
+    req.oidc.user.email,
+    req.oidc.user.picture
+  );
 
-  const { processo } = req.params;
+  const { process } = req.params;
 
-  const chats = await ConsultChat(user_id, processo.toLowerCase());
+  if (!process || process === "null") {
+    return res.status(400).json("Parâmetro inválido.");
+  }
+
+  const chats = await ConsultChat(login.user_id, process.toLowerCase());
 
   if (chats) {
     chats.sort((a, b) => a.id - b.id);
@@ -86,11 +96,12 @@ const AcessPages = async (req, res) => {
 
   try {
     res.render("layout", {
-      title: processo,
+      login,
+      title: process,
       // page: ,
-      content: `<span style="display: none">${DataPages[processo].span}</span>
-      <h1>${DataPages[processo].title}</h1>
-      <p>${DataPages[processo].text}<p>`,
+      content: `<span style="display: none">${DataPages[process].span}</span>
+      <h1>${DataPages[process].title}</h1>
+      <p>${DataPages[process].text}<p>`,
       chats,
     });
   } catch (error) {
@@ -100,20 +111,28 @@ const AcessPages = async (req, res) => {
 };
 
 const GetPageContent = async (req, res) => {
-  const { processo, user_id } = req.params;
+  const { subject } = req.params;
+
+  let login = new UserLogin(
+    req.oidc.user.sub,
+    req.oidc.user.name,
+    req.oidc.user.email,
+    req.oidc.user.picture
+  );
 
   try {
-    const chats = await ConsultChat(user_id, processo.toLowerCase());
+    const chats = await ConsultChat(login.user_id, subject.toLowerCase());
 
     if (chats) {
       chats.sort((a, b) => a.id - b.id);
     }
 
     res.json({
-      title: processo,
-      content: `<span style="display: none">${DataPages[processo].span}</span>
-      <h1>${DataPages[processo].title}</h1>
-      <p>${DataPages[processo].text}<p>`,
+      login,
+      title: subject,
+      content: `<span style="display: none">${DataPages[subject].span}</span>
+      <h1>${DataPages[subject].title}</h1>
+      <p>${DataPages[subject].text}<p>`,
       chats,
     });
   } catch (error) {
@@ -123,7 +142,8 @@ const GetPageContent = async (req, res) => {
 };
 
 const SendResp = async (req, res) => {
-  const { subject, message, user_id } = req.body;
+  const user_id = req.oidc.user.sub;
+  const { subject, message } = req.body;
 
   let userMessage = message;
   let messageDB = message;
@@ -133,7 +153,6 @@ const SendResp = async (req, res) => {
     const reader = await ImageReader(filePath);
 
     let updatedPath = filePath.replace(/\\/g, "/").slice(6);
-    console.log(updatedPath);
 
     userMessage = `[${userMessage}: (texto estraído da imagem) ${reader}]`;
     messageDB = `<img src="${updatedPath}" alt=${filename}> <br> ${message}`;
@@ -164,17 +183,13 @@ const SendResp = async (req, res) => {
 };
 
 const ClearChat = async (req, res) => {
-  const { subject, user_id } = req.body;
+  const user_id = req.oidc.user.sub;
+  const { subject } = req.body;
 
   try {
-    let clear;
     const response = await DeleteChat(user_id, subject);
 
-    if (response.length > 0) {
-      clear = true;
-    } else {
-      clear = false;
-    }
+    let clear = response.length > 0 ? true : false;
 
     res.json({
       resp: clear,

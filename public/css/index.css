@@ -51,25 +51,95 @@ header {
 
 /* profile */
 
-#user-profile {
+/* user profile */
+
+.container-profile {
   position: fixed;
+  top: 0;
   right: 0;
-  margin: 0.5rem 1rem;
+  margin: 0.2rem;
+  border-radius: 1rem;
+  padding: 0.2rem 0.1rem;
+  z-index: 5;
 }
 
-#user-profile .material-symbols-outlined {
-  background-color: var(--color1);
-  color: var(--color6);
-  padding: 0.5rem;
-  border-radius: 50%;
-  font-size: 1.4rem;
+/* .container-profile:hover {
+  background-color: var(--color5);
+} */
+
+.container-profile #user-profile {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease-in;
+  position: relative;
+  margin-bottom: 0.2rem;
 }
 
-#user-profile .material-symbols-outlined:hover {
+.container-profile #user-profile span {
+  display: inline-block; /* Necessário para transição */
+  transition: transform 0.2s ease-in; /* Transição suave para transform */
+}
+
+.container-profile #user-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.container-profile #user-infos {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.container-profile #user-infos p {
+  font-size: 0.9rem;
+  color: var(--color1);
+}
+
+.container-profile #user-infos .options::before {
+  margin: 1rem 0;
+  content: "";
+  display: block;
+  width: 100%;
+  height: 0.01rem;
+  background-color: var(--color5);
+}
+
+.container-profile #user-infos a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color3);
+  color: var(--color6);
+  padding: 0.5rem 0;
+  border-radius: 1rem;
+  transition: all 0.2s ease-in;
+  font-size: 0.9rem;
+}
+
+.container-profile #user-infos a:hover {
   background-color: var(--color2);
 }
+
+.container-profile #user-infos #delete-chat {
+  margin-top: 0.5em;
+  cursor: pointer;
+  background-color: #ef3b3b;
+}
+
+.container-profile #user-infos #delete-chat:hover {
+  background-color: #b63939;
+}
+
+/* message delete */
 
 #message-delete {
   position: fixed;
@@ -200,6 +270,15 @@ header {
 .content .title {
   text-align: center;
   width: 100%;
+  position: relative;
+}
+
+.content .title #version-ai {
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--color4);
 }
 
 .content .title h1 {
@@ -469,6 +548,14 @@ header {
 /* #chat-geral .chat-group {
   background-color: var(--color5);
 } */
+
+/* responsividade */
+
+@media screen and (max-width: 650px) {
+  header {
+    display: none;
+  }
+}
 
 /* loading */
 
