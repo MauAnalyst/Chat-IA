@@ -100,9 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
         e.style.backgroundColor = "transparent";
       });
 
-      menu.style.display = "none";
-      backgroundmenu.style.display = "none";
-      menu.classList.remove("header-slide-in");
+      if (window.innerWidth <= 650) {
+        menu.style.display = "none";
+        backgroundmenu.style.display = "none";
+        menu.classList.remove("header-slide-in");
+      }
 
       scroll.style.display = "none";
 
