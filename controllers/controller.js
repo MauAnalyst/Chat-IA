@@ -1,14 +1,62 @@
 import { DataPages } from "./pages.js";
 import { ImageReader } from "../configs/tesseract.js";
 import { responseAI } from "./osvaldoAI.js";
-import { ReadTab, addConversation } from "./excel.js";
-import { pool } from "../configs/db.js";
-import { ConsultChat, InsertChat, DeleteChat } from "../db/configTables.js";
+import { ReadTab } from "./excel.js";
+import {
+  InsertUser,
+  ConsultUser,
+  ConsultChat,
+  InsertChat,
+  DeleteChat,
+} from "../db/configTables.js";
 
-const RespIA = (req, res) => {
+class UserLogin {
+  constructor(user_id, user_name, user_email, user_picture, insertUserFn) {
+    this.user_id = user_id;
+    this.user_name = user_name;
+    this.user_email = user_email;
+    this.user_picture = user_picture;
+    this.insertUserFn = insertUserFn;
+  }
+
+  async saveUser() {
+    try {
+      return await this.insertUserFn(
+        this.user_id,
+        this.user_name,
+        this.user_email
+      );
+    } catch (error) {
+      console.error("Erro ao salvar usuário:", error);
+      throw error;
+    }
+  }
+}
+
+const HomePage = async (req, res) => {
+  const auth = req.oidc.isAuthenticated();
+  let login = auth
+    ? new UserLogin(
+        req.oidc.user.sub,
+        req.oidc.user.name,
+        req.oidc.user.email,
+        req.oidc.user.picture,
+        InsertUser
+      )
+    : null;
+
   try {
+    if (login) {
+      const checkUserChat = await ConsultUser(login.user_id);
+
+      if (!checkUserChat) {
+        await login.saveUser();
+      }
+    }
+
+    res.render("home", { login });
   } catch (error) {
-    console.log(error);
+    console.log("Erro ao carregar a página:", error);
     res.status(500).send("Erro ao carregar a página.");
   }
 };
@@ -23,7 +71,12 @@ const Chatpages = (req, res) => {
 };
 
 const AcessPages = async (req, res) => {
-  const { processo, user_id } = req.params;
+  const user_name = req.oidc.user.name;
+  const user_id = req.oidc.user.sub;
+  const user_email = req.oidc.user.email;
+  const user_picture = req.oidc.user.picture;
+
+  const { processo } = req.params;
 
   const chats = await ConsultChat(user_id, processo.toLowerCase());
 
@@ -82,7 +135,7 @@ const SendResp = async (req, res) => {
     let updatedPath = filePath.replace(/\\/g, "/").slice(6);
     console.log(updatedPath);
 
-    userMessage = `[${userMessage}: ${reader}]`;
+    userMessage = `[${userMessage}: (texto estraído da imagem) ${reader}]`;
     messageDB = `<img src="${updatedPath}" alt=${filename}> <br> ${message}`;
   }
   try {
@@ -132,4 +185,4 @@ const ClearChat = async (req, res) => {
   }
 };
 
-export { RespIA, Chatpages, AcessPages, GetPageContent, SendResp, ClearChat };
+export { HomePage, Chatpages, AcessPages, GetPageContent, SendResp, ClearChat };

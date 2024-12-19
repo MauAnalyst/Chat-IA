@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scroll.style.display = "none";
       showMessage();
 
-      const response = await fetch("/chats/delete-chat", {
+      const response = await fetch("/chats/send/delete-chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

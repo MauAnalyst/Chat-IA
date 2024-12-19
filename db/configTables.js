@@ -16,6 +16,26 @@ const InsertUser = async (id, name, email) => {
   }
 };
 
+const ConsultUser = async (userId) => {
+  try {
+    const query = `
+    SELECT name, email FROM users
+    WHERE id = $1
+    `;
+
+    const values = [userId];
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return null; // Retorna null se nenhum resultado for encontrado
+    }
+
+    return result.rows;
+  } catch (error) {
+    console.error("Erro ao consultar chat", error);
+  }
+};
+
 const InsertChat = async (userId, subject, userChat, osvaldoChat) => {
   try {
     const query = `
@@ -68,4 +88,4 @@ const ConsultChat = async (userId, subject) => {
   }
 };
 
-export { InsertUser, InsertChat, DeleteChat, ConsultChat };
+export { InsertUser, ConsultUser, InsertChat, DeleteChat, ConsultChat };

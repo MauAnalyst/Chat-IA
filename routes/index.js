@@ -1,7 +1,8 @@
 import express from "express";
 import { upload } from "../configs/multer.js";
+import auth0 from "express-openid-connect";
 import {
-  RespIA,
+  HomePage,
   Chatpages,
   AcessPages,
   GetPageContent,
@@ -10,13 +11,19 @@ import {
 } from "../controllers/controller.js";
 
 const router = express.Router();
+const { requiresAuth } = auth0;
 
-router.get("/chats", Chatpages);
-router.get("/chats/:processo/:user_id", AcessPages);
-router.get("/chats/c/:processo/:user_id", GetPageContent);
-router.post("/chats/send/message", upload.single("image"), SendResp);
-router.post("/chats/delete-chat", ClearChat);
+router.get("/", HomePage);
 
-//router.get("/", RespIA);
+router.get("/chats", requiresAuth(), Chatpages);
+router.get("/chats/:processo", requiresAuth(), AcessPages);
+router.get("/chats/c/:processo", requiresAuth(), GetPageContent);
+router.post(
+  "/chats/send/message",
+  requiresAuth(),
+  upload.single("image"),
+  SendResp
+);
+router.post("/chats/send/delete-chat", requiresAuth(), ClearChat);
 
 export { router };
