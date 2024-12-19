@@ -1,4 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+  //---------- responsividade
+  const menu = document.querySelector("header");
+  const menuButton = document.querySelector("#menu");
+  const backgroundmenu = document.querySelector("#background-menu");
+
+  menuButton.addEventListener("click", () => {
+    menu.style.display = "block";
+    backgroundmenu.style.display = "block";
+    setTimeout(() => {
+      menu.classList.toggle("header-slide-in");
+    }, 10);
+  });
+
+  backgroundmenu.addEventListener("click", () => {
+    menu.style.display = "none";
+    backgroundmenu.style.display = "none";
+    menu.classList.remove("header-slide-in");
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 650) {
+      // Redefinir estilos quando a largura for maior que 650px
+      menu.style.display = "";
+      backgroundmenu.style.display = "";
+      menu.classList.remove("header-slide-in");
+    }
+  });
+
   //-------- navegando entre chats
   const titleContent = document.querySelector(".content .title span");
   const titleChats = document.querySelectorAll(".chats .chat-group h3");
@@ -71,6 +99,10 @@ document.addEventListener("DOMContentLoaded", () => {
       chatsGroup.forEach((e) => {
         e.style.backgroundColor = "transparent";
       });
+
+      menu.style.display = "none";
+      backgroundmenu.style.display = "none";
+      menu.classList.remove("header-slide-in");
 
       scroll.style.display = "none";
 
@@ -157,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = input.value;
 
     if (message === "" && imageInput.files.length === 0) {
-      console.log("caiu aq?");
+      console.log("inputs vazios");
       return;
     }
 

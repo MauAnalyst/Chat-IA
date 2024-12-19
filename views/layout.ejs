@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/index.css" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_right_altanddeleteandarrow_downwardanduploadandcloseandarrow_drop_downandlogout"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_right_altanddeleteandarrow_downwardanduploadandcloseandarrow_drop_downandlogoutandmenu"
     />
   </head>
   <body>
@@ -99,8 +99,7 @@
         </ul>
       </nav>
     </header>
-
-    <div class=""></div>
+    <div id="background-menu"></div>
 
     <!-- chats -->
     <section class="content">
@@ -141,11 +140,13 @@
         </div>
       </div>
 
-      <!-- titulo dinamico -->
-      <div class="title">
+      <div class="navbar-menu">
+        <span id="menu" class="material-symbols-outlined">menu</span>
         <p id="version-ai">gemini 1.5 flash</p>
-        <%- content %>
       </div>
+
+      <!-- titulo dinamico -->
+      <div class="title"><%- content %></div>
 
       <!-- fim titulo dinamico -->
       <div class="content-chat">

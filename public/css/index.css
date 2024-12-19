@@ -272,12 +272,43 @@ header {
   width: 100%;
   position: relative;
 }
-
-.content .title #version-ai {
+.content .navbar-menu {
   position: absolute;
+  display: flex;
+  align-items: start;
+  z-index: 8;
   left: 0;
+}
+
+.content .navbar-menu #menu {
+  display: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in;
+  color: var(--color4);
+  padding: 0.1rem;
+  border-radius: 0.5rem;
+}
+
+#background-menu {
+  display: none;
+  z-index: 9;
+  position: fixed;
+  background-color: var(--color1);
+  opacity: 0.3;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.content .navbar-menu #menu:hover {
+  background-color: var(--color5);
+}
+
+.content .navbar-menu #version-ai {
   font-size: 0.8rem;
   font-weight: bold;
+  margin-left: 1rem;
   color: var(--color4);
 }
 
@@ -554,6 +585,25 @@ header {
 @media screen and (max-width: 650px) {
   header {
     display: none;
+    position: fixed;
+    z-index: 10;
+    /* background-color: red; */
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.5s ease-in;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.5s ease-in-out;
+  }
+
+  .header-slide-in {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .content .navbar-menu #menu {
+    display: block;
   }
 }
 
