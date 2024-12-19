@@ -115,29 +115,29 @@ header {
 .container-profile #user-infos a {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   gap: 0.5rem;
-  background-color: var(--color3);
-  color: var(--color6);
-  padding: 0.5rem 0;
+  /* background-color: var(--color3); */
+  color: var(--color1);
+  padding: 0.5rem 1rem;
   border-radius: 1rem;
   transition: all 0.2s ease-in;
   font-size: 0.9rem;
 }
 
 .container-profile #user-infos a:hover {
-  background-color: var(--color2);
+  background-color: var(--color5);
 }
 
 .container-profile #user-infos #delete-chat {
   margin-top: 0.5em;
   cursor: pointer;
-  background-color: #ef3b3b;
+  /* background-color: #ef3b3b; */
 }
-
+/*
 .container-profile #user-infos #delete-chat:hover {
   background-color: #b63939;
-}
+} */
 
 /* message delete */
 
