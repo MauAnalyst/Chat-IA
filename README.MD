@@ -42,7 +42,7 @@ O principal objetivo do projeto é facilitar o suporte interno e externo, organi
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/usuario/Osvaldo-IA.git
+   git clone https://github.com/MauAnalyst/Chat-IA
    cd Osvaldo-IA
 
    ```
