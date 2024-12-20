@@ -1,0 +1,1 @@
+O erro em questão é devido aos campos na tabela SGR_0100 estarem vazios

@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
     const baseDir = "public/uploads/chats_images";
     const user_id = req.oidc.user.sub;
     const { subject } = req.body;
-    const fullPath = path.join(baseDir, user_id, subject);
+    const fullPath = path.join(baseDir, subject);
 
     fs.mkdirSync(fullPath, { recursive: true });
 
